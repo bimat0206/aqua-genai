@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Data Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            overflow-x: auto;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Information</h1>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Product ID</th>
+                    <th>Category</th>
+                    <th>Label Match</th>
+                    <th>Label Confidence</th>
+                    <th>Label Explanation</th>
+                    <th>Overview Match</th>
+                    <th>Overview Confidence</th>
+                    <th>Overview Explanation</th>
+                    <th>Transaction ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchAndDisplayData() {
+            try {
+                const response = await fetch('result.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const tableBody = document.querySelector('#productTable tbody');
+
+                data.forEach(item => {
+                    const row = tableBody.insertRow();
+
+                    const payload = item.payload;
+                    const response = item.response;
+                    const textResult = response.result.find(r => r.type === 'text')?.text;
+
+                    row.insertCell().textContent = payload.product_id || 'N/A';
+                    row.insertCell().textContent = payload.product_category || 'N/A';
+
+                    if (textResult) {
+                        row.insertCell().textContent = textResult.matchLabelToReference || 'N/A';
+                        row.insertCell().textContent = textResult.matchLabelToReference_confidence || 'N/A';
+                        row.insertCell().textContent = textResult.label_explanation || 'N/A';
+                        row.insertCell().textContent = textResult.matchOverviewToReference || 'N/A';
+                        row.insertCell().textContent = textResult.matchOverviewToReference_confidence || 'N/A';
+                        row.insertCell().textContent = textResult.overview_explanation || 'N/A';
+                    } else {
+                        for (let i = 0; i < 6; i++) {
+                            row.insertCell().textContent = 'N/A';
+                        }
+                    }
+                    row.insertCell().textContent = response.transactionId || 'N/A';
+                });
+
+            } catch (error) {
+                console.error('Error fetching or parsing data:', error);
+                document.querySelector('.container').innerHTML = `<p style="color: red; text-align: center;">Failed to load data: ${error.message}</p>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchAndDisplayData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+[
+    {
+        "ParameterKey": "Prefix",
+        "ParameterValue": "aqua-genai"
+    },
+    {
+        "ParameterKey": "Stage",
+        "ParameterValue": "dev"
+    },
+    {
+        "ParameterKey": "ModelRegion",
+        "ParameterValue": "us-east-1"
+    },
+    {
+        "ParameterKey": "ModelId",
+        "ParameterValue": "anthropic.claude-3-5-sonnet-20240620-v1:0"
+    },
+    {
+        "ParameterKey": "ModelMaxTokens",
+        "ParameterValue": "5000"
+    },
+    {
+        "ParameterKey": "ModelTemperature",
+        "ParameterValue": "0.0"
+    },
+    {
+        "ParameterKey": "FunctionMemorySize",
+        "ParameterValue": "1024"
+    },
+    {
+        "ParameterKey": "FunctionTimeout",
+        "ParameterValue": "30"
+    },
+    {
+        "ParameterKey": "FunctionLogLevel",
+        "ParameterValue": "INFO"
+    },
+    {
+        "ParameterKey": "MaxReferenceLabelImages",
+        "ParameterValue": "2"
+    },
+    {
+        "ParameterKey": "MaxReferenceOverviewImages",
+        "ParameterValue": "3"
+    },
+    {
+        "ParameterKey": "ApiRateLimit",
+        "ParameterValue": "10"
+    },
+    {
+        "ParameterKey": "ApiBurstLimit",
+        "ParameterValue": "5"
+    },
+    {
+        "ParameterKey": "ApiQuotaLimit",
+        "ParameterValue": "1000"
+    },
+    {
+        "ParameterKey": "ApiQuotaPeriod",
+        "ParameterValue": "MONTH"
+    }
+]

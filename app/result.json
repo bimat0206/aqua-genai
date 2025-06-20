@@ -1,0 +1,539 @@
+[
+    {
+        "payload": {
+            "product_id": "AQR-B360MA(SLB)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-B360MA(SLB)/TEM NL/ffb64a06-b4c8-4910-bf2b-03f39bcc92b0-image_1731902784870.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-B360MA(SLB)/CHÍNH DIỆN/4661d207-af58-4f0a-a97c-e6f302ca07ef-image_1731902767972.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label image. Key matching elements include: Exact product code match: AQR-B360MA, Capacity: 292L, Energy consumption: 380 kWh/năm, Rated power: 102 W, Energy efficiency ratio: 1.81. The layout, design, and all text elements are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image matches perfectly with the reference overview images. Key matching features include: Two-door bottom-freezer configuration, Dark grey matte finish, Recessed handles integrated into the door design, Aqua logo placement in the top right corner of the upper door, Thin horizontal line separating the freezer and refrigerator compartments, Proportions of the upper and lower compartments. The overall design, color, and all visible features are identical to the reference images for Product ID AQR-B360MA(SLB)."
+                    }
+                }
+            ],
+            "transactionId": "7ee3592c-d78e-4c2e-957a-4efa36f7c598"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-M466XA(GB)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-M466XA(GB)/TEM NL/cc3d84b7-5ce4-4bbd-be95-68c95abc3b3f-image_1731310266872.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/9b9203f4-eacd-42b0-9a86-094b7062afee-image_1731310259151.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images. Key matching elements include: Product code AQR-M466XA, capacity 410L, energy consumption 503.1 kWh/year, rated power 94W, energy efficiency ratio 1.48, and Vietnamese energy rating of 3 stars. The warranty label for 10 years on the Twin Inverter compressor is also identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image perfectly matches the reference images for Product ID AQR-M466XA(GB). Key matching features include: Four-door configuration with two top doors and two bottom doors, glossy black exterior finish, vertical touch control panel on the upper right door, Aqua logo placement on the upper right, Twin Inverter label on the lower right, and the overall proportions of the refrigerator. The handle design is consistent, showing no visible external handles, indicating a push-to-open or recessed handle design."
+                    }
+                }
+            ],
+            "transactionId": "ca5251c4-eb36-4e75-b3cb-1052e7504efa"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-M532XA(CBC)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-M532XA(CBC)/TEM NL/7e6d7c9f-e816-4028-9a36-9c52b6742dcd-image_1731660637403.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-M532XA(CBC)/CHÍNH DIỆN/e84ca0da-3f48-45d6-9683-52d72651f378-image_1731915349801.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label for Product ID AQR-M532XA(CBC). Key matching elements include: product code AQR-M532XA, capacity 469L, energy consumption 415.5 kWh/year, power rating 135W, energy efficiency ratio 1.88, and manufacturer Haier Electric (Thailand) PCL. The layout, design, and all text elements are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image perfectly matches the reference images for Product ID AQR-M532XA(CBC). Key matching features include: French door configuration with two top doors and two bottom freezer drawers, dark grey textured finish, absence of external handles (likely recessed handles), Aqua logo placement on upper right door, digital control panel on upper right door, and overall proportions. The product in the store display is visually identical to the reference images."
+                    }
+                }
+            ],
+            "transactionId": "8fe7b643-f99b-4631-b8e6-c04602182fc4"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-M536XA(GB)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-M536XA(GB)/TEM NL/1ccea9a0-0fd7-468f-90a2-ed4e1252e585-image_1745820222132.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-M536XA(GB)/CHÍNH DIỆN/343c74dd-0f3e-4a0d-ac71-6266a8ff0b36-image_1745820233155.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches the reference label image for Product ID AQR-M536XA(GB) with high confidence. Key matching elements include: exact product code AQR-M536XA, capacity of 469L, energy consumption of 431.3 kWh/year, rated power of 135W, energy efficiency ratio of 1.81, and matching layout/design of the energy rating label.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image matches the reference images for Product ID AQR-M536XA(GB) with high confidence. Matching features include: French door configuration with 4 doors (2 top, 2 bottom), glossy black exterior finish, recessed handles, Aqua logo placement on upper right door, digital control panel on upper left door, and overall proportions/dimensions. The product in the store image is visually identical to the reference images."
+                    }
+                }
+            ],
+            "transactionId": "0c80ac2e-3e7b-4083-820f-48ba195d918a"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-M560XA(GL)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-M560XA(GL)/TEM NL/b172fa64-36eb-40b0-9bbf-703b74317ec9-image_1731309825060.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-M560XA(GL)/CHÍNH DIỆN/8e4e2fb8-352c-4c38-95bf-22e6d6549673-image_1731309809857.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label for Product ID AQR-M560XA(GL). Key matching elements include: exact product code (AQR-M560XA), capacity (469L), energy consumption (429.4 kWh/year), rated power (135W), energy efficiency ratio (1.82), and Vietnamese standards (TCVN 7828:2016, TCVN 7829:2016). The layout, color scheme, and all other visible information are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "The uploaded overview image matches the reference images for Product ID AQR-M560XA(GL). Key matching features include: French door configuration with two top doors and two bottom doors, dark blue glossy finish on all doors, Aqua logo placement on the upper right door, digital control panel on the upper right door, 'Twin Inverter' text on the lower right door, and overall proportions. The only slight uncertainty is due to reflections and lighting conditions in the store environment, which slightly obscure some details, hence the 0.9 confidence score."
+                    }
+                }
+            ],
+            "transactionId": "2d236248-38c0-4363-bdae-b61d102837c1"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-T260FA(FB)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-T260FA(FB)/TEM NL/433371f7-1411-4089-86bb-becda788508d-image_1745897506523.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-T260FA(FB)/CHÍNH DIỆN/8d0c1fbe-2cbc-435c-b039-20e3bad57e7a-image_1745897487741.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images for Product ID AQR-T260FA(FB). Key matching elements include: exact product code (AQR-T260FA), capacity (236L), energy consumption (312 kWh/năm), rated power (80W), energy efficiency ratio (2.04), and Vietnamese standards (TCVN 7828: 2016, TCVN 7829: 2016). The label layout, color scheme, and all text content are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image perfectly matches the reference images for Product ID AQR-T260FA(FB). Key matching features include: two-door top-freezer configuration, glossy black exterior finish, silver trim between doors, recessed handles integrated into the doors, Aqua logo placement on upper right of top door, and overall proportions. The refrigerator in the uploaded image is visually identical to the reference images in all discernible physical features."
+                    }
+                }
+            ],
+            "transactionId": "cfe0a831-3367-414e-ae0a-ea66261fbec9"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-T299FA(SL)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-T299FA(SL)/TEM NL/51d2ea69-94b2-49c5-a889-fd8ca9043598-image_1731580087114.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-T299FA(SL)/CHÍNH DIỆN/1e676815-e888-44ae-8917-e1e74b4c240f-image_1731580104620.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.98,
+                        "label_explanation": "The uploaded label image is an exact match to the reference label for Product ID AQR-T299FA(SL). Key matching elements include: exact product code AQR-T299FA, capacity of 283L, energy consumption of 362 kWh/năm, rated power of 78.6W, energy efficiency ratio of 1.83, and compliance with TCVN 7828:2016 and TCVN 7829:2016 standards. The label design, layout, color scheme, and all text information are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image matches the reference images for Product ID AQR-T299FA(SL) in all discernible features. Specific matching elements include: two-door top-freezer configuration, matte dark grey exterior finish, recessed handles integrated into the door design, Aqua logo placement in the upper right corner of the refrigerator door, 'TWIN INVERTER' text on the chrome strip between doors, and overall proportions. The product in the store image appears identical to the reference images, with no visible discrepancies in design or features."
+                    }
+                }
+            ],
+            "transactionId": "bb7b4c09-9dd8-4ac8-9c8e-30cb69ea225c"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-T380FA(SL)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-T380FA(SL)/TEM NL/9629dd78-e4af-4933-8511-77fb588aad04-image_1745897725561.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-T380FA(SL)/CHÍNH DIỆN/4efb4f1d-72de-4c57-b3b4-6d29ff3f23d4-image_1745897701138.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label image for Product ID AQR-T380FA(SL). All key information including product code, capacity (328L), energy consumption (339 kWh/năm), rated power (86W), energy efficiency ratio (2.03), and Vietnamese standards (TCVN 7828:2016, TCVN 7829:2016) are identical. The layout, color scheme, and VNEEP logo are also consistent.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "While the uploaded overview image shows an Aqua refrigerator with a similar two-door, top-freezer configuration, there are several key differences from the reference images for AQR-T380FA(SL): 1) The color of the refrigerator in the uploaded image is dark brown or black, while the reference images show a silver-grey finish. 2) The handle design appears to be a recessed pocket handle, whereas the reference images show a prominent bar handle. 3) The 'TWIN INVERTER' text on the uploaded image is positioned differently than in the reference images. These discrepancies indicate that the product in the store is not an exact match for the AQR-T380FA(SL) model."
+                    }
+                }
+            ],
+            "transactionId": "32080ff7-06b3-49e6-b2e4-ec73d3bf95a6"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-T410FA(WGB)",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-T410FA(WGB)/TEM NL/f16a6e9a-ef73-4f78-8888-449cd2a1c301-image_1732240324839.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-T410FA(WGB)/CHÍNH DIỆN/65c02e81-3530-4f60-9fd5-b8b50e662993-image_1732240346538.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label image for Product ID AQR-T410FA(WGB). Key matching elements include: exact product code (AQR-T410FA), capacity (358 L), energy consumption (386 kWh/năm), rated power (88 W), energy efficiency ratio (1.82), and Vietnamese energy rating standards (TCVN 7828: 2016, TCVN 7829: 2016). The layout, color scheme, and all text elements are identical.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The product in the uploaded overview image perfectly matches the reference images for AQR-T410FA(WGB). Key matching features include: two-door top-freezer configuration, glossy black exterior finish, AQUA logo placement at the top, 'TWIN INVERTER' text on the separation line between freezer and refrigerator compartments, integrated pocket handles, and a water dispenser on the lower right side of the refrigerator door. The overall proportions and design elements are identical to the reference images."
+                    }
+                }
+            ],
+            "transactionId": "58699234-f4a3-4129-a1bd-b6c7397df02a"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQR-TA518FA(GL)U1",
+            "product_category": "REF",
+            "uploaded_label_image_key": "dataset/REF/AQR-TA518FA(GL)U1/TEM NL/f781132a-8073-46f9-a760-08727d96e919-image_1746691004905.jpg",
+            "uploaded_overview_image_key": "dataset/REF/AQR-TA518FA(GL)U1/CHÍNH DIỆN/15a3f898-3325-424d-8fa6-479f61177f2a-image_1746691018162.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 1.0,
+                        "label_explanation": "The uploaded label image is an exact match to the reference label image. Both show the energy label for model AQR-TA518FA(GL)U1 with identical information: 455L capacity, 408 kWh/year energy consumption, 120W rated power, 1.84 energy efficiency ratio, and compliance with TCVN 7828:2016 and TCVN 7829:2016 standards. The layout, colors, and all text elements are identical.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 1.0,
+                        "overview_explanation": "While the uploaded overview image shows an Aqua refrigerator with Twin Inverter technology, there are clear visual differences from the reference images for AQR-TA518FA(GL)U1. The uploaded image shows a dark grey or black exterior finish, while the reference images show a dark blue glossy finish. The uploaded image also shows a decorative panel with fruit images on the lower door, which is not present in the reference images. These distinct visual differences indicate that the product in the store is not the exact AQR-TA518FA(GL)U1 model, despite having a matching energy label."
+                    }
+                }
+            ],
+            "transactionId": "0e10beb0-0d91-4195-afef-382f0b3eba22"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQT43K800UG",
+            "product_category": "TV",
+            "uploaded_label_image_key": "dataset/TV/AQT43K800UG/TEM NL/86cd6cbe-7575-497f-8ca7-5be757494d1b-image_1747041538108.jpg",
+            "uploaded_overview_image_key": "dataset/TV/AQT43K800UG/CHÍNH DIỆN/7e8edbb7-be3c-44fe-bfda-7c53d7e3ece8-image_1747041510434.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images for Product ID AQT43K800UG. Key matching elements include: exact product code (AQT43K800UG), screen size (43 INCH), energy efficiency rating (5 stars), energy consumption index (3.54), manufacturer (AQUA VIET NAM), and all other text and layout elements. The only minor difference is image quality, which does not affect the core information.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "The uploaded overview image does not match the reference images for Product ID AQT43K800UG. Mismatches include: 1) Brand: The uploaded image shows a Sharp TV, while the reference is for an Aqua TV. 2) Stand design: The uploaded image shows a TV with two separate feet at the ends, while the reference Aqua TV has a central stand. 3) Bezel design: The Sharp TV appears to have a slightly thicker bezel compared to the slim bezel on the Aqua TV. 4) Logo placement: The Sharp logo is prominently displayed at the top, while the Aqua logo in the reference is more subtle and located at the bottom center. These differences clearly indicate that the product in the store is not the Aqua AQT43K800UG model."
+                    }
+                }
+            ],
+            "transactionId": "e0ce2fd2-b2f8-40f5-b8b1-b9b033734dc6"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQT50S80EUX",
+            "product_category": "TV",
+            "uploaded_label_image_key": "dataset/TV/AQT50S80EUX/TEM NL/f48060ae-9506-44a2-9492-ac2eaca630b7-image_1747041451682.jpg",
+            "uploaded_overview_image_key": "dataset/TV/AQT50S80EUX/CHÍNH DIỆN/a8b9bbbe-2da8-4312-94fd-b820ae6125b5-image_1747041443107.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images for Product ID AQT50S80EUX. The product code, energy rating (5 stars), screen size (50 inch), energy efficiency index (2.55), and all other visible information are identical. The layout, colors, and logos (including VNEEP and DVB-T2) are also consistent across all images.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image shows a TV that does not match the reference images for Product ID AQT50S80EUX. Key differences include: 1) The stand design - the uploaded image shows a central pedestal stand, while the reference images show dual feet stands at the ends. 2) The bezel - the uploaded image shows a TV with a very thin bezel all around, while the reference images show a slightly thicker bottom bezel. 3) The overall design - the uploaded image shows a more premium-looking TV with a sleeker profile compared to the reference images. 4) User interface - the uploaded image displays a Google TV interface, which is not present in the reference images. These significant visual differences indicate that the TV in the store is not the AQT50S80EUX model."
+                    }
+                }
+            ],
+            "transactionId": "eac8358f-c75e-48a6-85b1-b476b4d3067c"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQT65S80EUX",
+            "product_category": "TV",
+            "uploaded_label_image_key": "dataset/TV/AQT65S80EUX/TEM NL/365863a0-5390-4c05-b50a-944bf3d48354-image_1747816428338.jpg",
+            "uploaded_overview_image_key": "dataset/TV/AQT65S80EUX/CHÍNH DIỆN/babdcd2f-8b98-428d-857a-574d6c1dfe2c-image_1747816181447.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label image for Product ID AQT65S80EUX. Key matching elements include: exact product code (AQT65S80EUX), screen size (65 INCH), energy efficiency rating (4 stars out of 5), energy consumption index (2.15), and all other text and layout elements. The label design, colors, and logos are identical.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image does not match the reference images for Product ID AQT65S80EUX. The main discrepancies are: 1) The uploaded image shows a TV with a central stand design, while the reference images show a TV with two separate feet at the ends. 2) The bezel design differs, with the uploaded image showing a slightly thicker bottom bezel compared to the uniform thin bezel in the reference images. 3) The overall TV shape and proportions appear different, with the uploaded image showing a more rectangular shape compared to the sleeker design in the reference images. These clear visual differences indicate this is not the AQT65S80EUX model."
+                    }
+                }
+            ],
+            "transactionId": "e0650e3d-f1e5-49b7-8c6f-44fe48ffce1a"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQD-A952J.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQD-A952J.BK/TEM NL/8991bf0f-0682-4b78-b3ff-a59d467ababa-image_1746701407979.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQD-A952J.BK/CHÍNH DIỆN/06887566-0b49-491f-871a-d6267ca09547-image_1746701399364.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images for Product ID AQD-A952J.BK. The product code, capacity (9.5 kg), rated power (1750 W), and energy efficiency rating (5 stars) are identical. The layout, color scheme, and all text elements are consistent across the uploaded and reference images.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "The washing machine in the uploaded overview image appears to be an exact match to the reference images for Product ID AQD-A952J.BK. Key matching features include: front-loading design, dark gray/black color scheme, large circular door with glass window, control panel layout with digital display and circular dial, detergent dispenser location, and overall proportions. The only slight hesitation in confidence is due to the partial obstruction of the machine by packaging material in the uploaded image, which prevents full verification of all exterior features. However, all visible elements are consistent with the reference images."
+                    }
+                }
+            ],
+            "transactionId": "4073d651-fa0a-40a5-982b-1628c69f325f"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQD-AH1000G.PS",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQD-AH1000G.PS/TEM NL/526ff031-0f97-4e14-9586-ce9c0898a7df-image_1731551297049.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQD-AH1000G.PS/CHÍNH DIỆN/25fe796d-895d-48ee-a8ea-95842d618c95-image_1731551267458.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label for Product ID AQD-AH1000G.PS. Key matching elements include: product code AQD-AH1000G, rated power 1800W, wash capacity 10.0kg, dry capacity 6.0kg, energy efficiency rating of 4.5 stars, and energy consumption of 16.6 W.h/kg. The label layout, color scheme, and all text content are identical to the reference.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The product in the uploaded overview image is an exact match to the reference images for AQD-AH1000G.PS. Key matching features include: front-loading design, dark gray color, large circular door with chrome trim, digital control panel with circular central knob, model name 'AQUA' prominently displayed, and the overall sleek, modern design. The product dimensions, proportions, and all visible external features are identical to the reference images."
+                    }
+                }
+            ],
+            "transactionId": "6857e15d-a93b-467e-8a73-31c053aa11a5"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQD-DW1000J.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQD-DW1000J.BK/TEM NL/39f5c6f9-b1de-47b9-9ad6-c0857b62097d-image_1731556863611.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQD-DW1000J.BK/CHÍNH DIỆN/3514279f-f522-401e-9f6a-e9489b29dc15-image_1731556853700.jpg"
+        },
+        "response": {
+            "error": "Internal server error."
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQD-DW1100J.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQD-DW1100J.BK/TEM NL/518e1479-b2a6-4032-a492-cae935af7612-image_1731829208530.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQD-DW1100J.BK/CHÍNH DIỆN/d01ffce7-f5f7-41cc-a03e-a457d3de346a-image_1732864827909.jpg"
+        },
+        "response": {
+            "error": "Internal server error."
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQW-DR100JT.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQW-DR100JT.BK/TEM NL/df9d7d5c-0b2c-42b8-9b7f-0ecb151359fe-image_1747190985325.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQW-DR100JT.BK/CHÍNH DIỆN/d4518642-0df1-432c-9995-24446a12a631-image_1747191016111.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label for Product ID AQW-DR100JT.BK. Key matching elements include: exact product code match (AQW-DR100JT), matching capacity (10.0 kg), matching rated power (280 W), matching energy efficiency rating (5 stars), and identical layout and design of the energy label.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.98,
+                        "overview_explanation": "The product in the uploaded overview image is perfectly identical to the reference images for AQW-DR100JT.BK. Matching features include: top-loading design, black color finish, control panel layout with digital display at the top, DD Inverter Motor feature prominently displayed, and overall body shape and proportions. The product is clearly identifiable as the Aqua AQW-DR100JT.BK model."
+                    }
+                }
+            ],
+            "transactionId": "bd353e75-27cb-44fc-953a-bc4a4d497c6c"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQW-DR120HT.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQW-DR120HT.BK/TEM NL/59861b6d-7fbb-4731-ad57-9a3be80d4133-image_1747191029079.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQW-DR120HT.BK/CHÍNH DIỆN/a0096a90-7817-4207-980d-3da54d3e5fae-image_1747191045484.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image shows an exact match to the reference label for Product ID AQW-DR120HT.BK. The product code, capacity (12.0kg), power rating (150W), and energy efficiency rating (5 stars) all match perfectly. The layout, design, and all text elements are identical to the reference label.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image shows a perfect match to the reference images for Product ID AQW-DR120HT.BK. The washing machine is a top-loading model with identical features: black color, silver trim on the top lid, digital display panel with a large central dial, and the same button layout. The overall shape, dimensions, and design elements are exactly the same as the reference images."
+                    }
+                }
+            ],
+            "transactionId": "4829b0b3-5995-44ad-abcb-af68cd8a948c"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AQW-FR120HT.BK",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AQW-FR120HT.BK/TEM NL/bc64f205-725b-4c9f-b825-fd9bddb89d64-image_1732004436271.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AQW-FR120HT.BK/CHÍNH DIỆN/e6d2eb4b-adb7-427b-9501-99fb27727e43-image_1732004424235.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image shows an exact match to the reference label for Product ID AQW-FR120HT.BK. The product code, capacity (12.0 kg), power rating (570 W), and energy efficiency rating (5 stars) are all identical. The layout, design, and all textual information on both the energy rating label and product specification label are consistent with the reference.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "The uploaded overview image shows a perfect match to the reference images for Product ID AQW-FR120HT.BK. Key matching features include: Top-loading design; Black color finish; Control panel layout with digital display and large central dial; Tempered glass lid with silver trim; AQUA logo placement; Overall body shape and proportions. No discernible differences were observed in any physical features compared to the reference images."
+                    }
+                }
+            ],
+            "transactionId": "3d848c16-ff4a-46d0-997f-c18f96ea35f7"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AW10-B4959U1K(B)",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AW10-B4959U1K(B)/TEM NL/9f84d95f-8691-4bfc-bc0f-cddf1f4082de-image_1731660055622.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AW10-B4959U1K(B)/CHÍNH DIỆN/f68ce16c-d4c7-405e-8ba4-9fc2f13b97e0-image_1731660043485.jpg"
+        },
+        "response": {
+            "error": "Internal server error."
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AW10-BP4959U1K(B)",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AW10-BP4959U1K(B)/TEM NL/7c3d2d4b-75db-436f-9155-794c181d82b4-image_1747190953210.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AW10-BP4959U1K(B)/CHÍNH DIỆN/ed74c03d-1e80-4806-8220-5d69f7febbd4-image_1747190937129.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image shows an exact match to the reference label for Product ID AW10-BP4959U1K(B). The product code, capacity (10.0 kg), rated power (1750 W), and energy efficiency rating (5 stars) are all identical. The label layout, color scheme, and VNEEP logo are also consistent with the reference.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "While the uploaded overview image shows a front-loading washing machine that closely resembles the reference images for AW10-BP4959U1K(B), there are several key differences: 1) The control panel layout is different, with a circular dial on the right side in the uploaded image, whereas the reference images show a more rectangular layout with the circular control on the left. 2) The logo placement differs - the uploaded image shows 'AQUA' on the top left of the control panel, while the reference images have it centered. 3) The door design appears slightly different, with a more pronounced chrome or metallic rim in the uploaded image compared to the reference. These discrepancies indicate that while this is an Aqua washing machine, it is not the exact AW10-BP4959U1K(B) model."
+                    }
+                }
+            ],
+            "transactionId": "147e3f26-1755-4648-95d7-e9f36622a191"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AW12-B4959U1K(B)",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AW12-B4959U1K(B)/TEM NL/b3606c78-9d36-4c11-ad55-d11dbcd021a3-image_1731300264190.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AW12-B4959U1K(B)/CHÍNH DIỆN/6565679b-604a-4a17-95a0-5cfb0a065974-image_1731566776288.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 0.95,
+                        "label_explanation": "The uploaded label image matches exactly with the reference label images for Product ID AW12-B4959U1K(B). The product code, energy rating (4 stars), capacity (12.0 kg), power rating (1750 W), and energy efficiency (31.9 W.h/kg) are all identical. The layout, color scheme, and all text elements are consistent across the uploaded and reference images.",
+                        "matchOverviewToReference": "yes",
+                        "matchOverviewToReference_confidence": 0.9,
+                        "overview_explanation": "The product in the uploaded overview image appears to be an exact match to the reference images for Product ID AW12-B4959U1K(B). It is a front-loading washing machine with a black finish. The control panel layout, digital display, circular door design with silver trim, and overall shape are consistent. The product has a sleek, modern design with curved edges on the sides. However, the confidence is slightly lower due to the plastic wrapping on the displayed product, which obscures some details."
+                    }
+                }
+            ],
+            "transactionId": "1044bb92-ec07-4344-b4b3-77c02a2a5cd0"
+        }
+    },
+    {
+        "payload": {
+            "product_id": "AW12-BP4959U1K(B)",
+            "product_category": "WM",
+            "uploaded_label_image_key": "dataset/WM/AW12-BP4959U1K(B)/TEM NL/ed73a6b4-5712-4003-8f98-e3dc3bb0a7a1-image_1732864048825.jpg",
+            "uploaded_overview_image_key": "dataset/WM/AW12-BP4959U1K(B)/CHÍNH DIỆN/ec7157e1-c968-43b4-ad56-5d4bde229104-image_1732864042601.jpg"
+        },
+        "response": {
+            "result": [
+                {
+                    "type": "text",
+                    "text": {
+                        "matchLabelToReference": "yes",
+                        "matchLabelToReference_confidence": 1.0,
+                        "label_explanation": "The uploaded label image is an exact match to the reference label images. The product code AW12-BP4959U1K is identical, as well as all other information including the rated power (1750 W), washing capacity (12.0 kg), energy efficiency rating (4 stars), and energy consumption (28.2 Wh/kg). The layout, colors, and design elements are also identical.",
+                        "matchOverviewToReference": "no",
+                        "matchOverviewToReference_confidence": 0.95,
+                        "overview_explanation": "While the overall design of the washing machine in the uploaded image is very similar to the reference images, there are some subtle but important differences that prevent a perfect match. The main discrepancies are: 1) The control panel layout is slightly different, with the circular dial on the right side in the uploaded image, while it's on the left in the reference images. 2) The Aqua logo placement differs - it's on the top left in the uploaded image but on the top right in the reference images. 3) The display panel shows different information ('00:35' in the uploaded image vs '00:38' in one reference image). These differences, while minor, indicate that this is not an exact match to the AW12-BP4959U1K(B) model."
+                    }
+                }
+            ],
+            "transactionId": "f80beafb-99a8-4a3a-a5ff-a900e795d28f"
+        }
+    }
+]

@@ -1,0 +1,78 @@
+{
+    "Items": [
+        {
+            "bedrockResponse": {
+                "M": {
+                    "role": {
+                        "S": "assistant"
+                    },
+                    "stop_sequence": {
+                        "NULL": true
+                    },
+                    "usage": {
+                        "M": {
+                            "output_tokens": {
+                                "N": "443"
+                            },
+                            "cache_creation_input_tokens": {
+                                "N": "0"
+                            },
+                            "input_tokens": {
+                                "N": "10024"
+                            },
+                            "cache_read_input_tokens": {
+                                "N": "0"
+                            }
+                        }
+                    },
+                    "stop_reason": {
+                        "S": "end_turn"
+                    },
+                    "model": {
+                        "S": "claude-sonnet-4-20250514"
+                    },
+                    "id": {
+                        "S": "msg_bdrk_01PMf7KXEDz588YoXUZffe72"
+                    },
+                    "type": {
+                        "S": "message"
+                    },
+                    "content": {
+                        "L": [
+                            {
+                                "M": {
+                                    "type": {
+                                        "S": "text"
+                                    },
+                                    "text": {
+                                        "S": "```json\n{\n  \"matchLabelToReference\": \"yes\",\n  \"matchLabelToReference_confidence\": 0.95,\n  \"label_explanation\": \"The uploaded label image shows an exact match to the reference labels for Product ID AQR-M466XA(GB). Key matching elements include: Product model code 'AQR-M466XA' (note: the (GB) suffix appears in the watermark text but the core model matches), capacity of 410L, energy consumption of 503.1 kWh/năm, power rating of 94W, energy efficiency rating of 1.48, manufacturer 'HAIER OVERSEAS ELECTRIC APPLIANCES CORP. LTD', country of origin 'TRUNG QUỐC', Vietnamese standards TCVN 7828:2016 and TCVN 7829:2016, 3-star energy rating display, green energy label design with VNEEP certification logo, and '10 YEARS TWIN INVERTER' warranty information. All text, layout, colors, and design elements are identical between uploaded and reference images.\",\n  \"matchOverviewToReference\": \"yes\",\n  \"matchOverviewToReference_confidence\": 0.92,\n  \"overview_explanation\": \"The uploaded overview image shows a four-door refrigerator that matches the reference overview images for Product ID AQR-M466XA(GB). Key matching features include: Four-door configuration with French doors on top and two bottom freezer drawers, glossy black exterior finish, AQUA logo positioned on the upper right section, recessed vertical handle design integrated into the door frames, Twin Inverter branding visible on the lower section, overall proportions and door arrangement identical to reference images. The product displays the characteristic sleek black finish and modern four-door design that matches the reference standard. Minor reflections and lighting differences are present due to retail environment but do not affect the core design verification.\"\n}\n```"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "uploadedLabelImageKey": {
+                "S": "dataset/REF/AQR-M466XA(GB)/TEM NL/22ab3ab6-ed75-4999-b3dc-1b7aaf9cb070-image_1731580040127.jpg"
+            },
+            "timestamp": {
+                "S": "2025-06-18T08:01:13.680325"
+            },
+            "uploadedOverviewImageKey": {
+                "S": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/20ffd946-63eb-4b55-95a8-790e358c5d00-image_1731580061456.jpg"
+            },
+            "productCategory": {
+                "S": "REF"
+            },
+            "id": {
+                "S": "15d44dda-90d8-41ea-ae04-7c0085766d2a"
+            },
+            "productId": {
+                "S": "AQR-M466XA(GB)"
+            }
+        }
+    ],
+    "Count": 1,
+    "ScannedCount": 1
+}

@@ -1,0 +1,12 @@
+{
+  "httpMethod": "GET",
+  "path": "/api/catalog",
+  "queryStringParameters": {
+    "type": "categories"
+  },
+  "pathParameters": null,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": null
+}

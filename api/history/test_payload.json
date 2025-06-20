@@ -1,0 +1,13 @@
+{
+  "httpMethod": "GET",
+  "path": "/api/history",
+  "queryStringParameters": {
+    "page": "1",
+    "limit": "10"
+  },
+  "pathParameters": null,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": null
+}
