@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net/url"  // Added for URL decoding
+	"net/url" // Added for URL decoding
 	"os"
 	"strings"
 	"time"
@@ -18,17 +18,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/smithy-go/middleware"
 	"github.com/google/uuid"
 )
 
 // Configuration structure
 type Config struct {
-	ResultTable          string
-	DatasetBucket        string
-	ValidationBucket     string
-	Region               string
-	PresignedURLExpiry   time.Duration
-	LogLevel             string
+	ResultTable        string
+	DatasetBucket      string
+	ValidationBucket   string
+	Region             string
+	PresignedURLExpiry time.Duration
+	LogLevel           string
 }
 
 // Core data structures matching existing DynamoDB schema
@@ -69,31 +70,31 @@ type ContentItem struct {
 
 // Parsed verification results from AI response
 type VerificationResults struct {
-	MatchLabelToReference       string  `json:"matchLabelToReference" dynamodbav:"matchLabelToReference"`
-	MatchLabelConfidence        float64 `json:"matchLabelToReference_confidence" dynamodbav:"matchLabelToReference_confidence"`
-	LabelExplanation            string  `json:"label_explanation" dynamodbav:"label_explanation"`
-	MatchOverviewToReference    string  `json:"matchOverviewToReference" dynamodbav:"matchOverviewToReference"`
-	MatchOverviewConfidence     float64 `json:"matchOverviewToReference_confidence" dynamodbav:"matchOverviewToReference_confidence"`
-	OverviewExplanation         string  `json:"overview_explanation" dynamodbav:"overview_explanation"`
+	MatchLabelToReference    string  `json:"matchLabelToReference" dynamodbav:"matchLabelToReference"`
+	MatchLabelConfidence     float64 `json:"matchLabelToReference_confidence" dynamodbav:"matchLabelToReference_confidence"`
+	LabelExplanation         string  `json:"label_explanation" dynamodbav:"label_explanation"`
+	MatchOverviewToReference string  `json:"matchOverviewToReference" dynamodbav:"matchOverviewToReference"`
+	MatchOverviewConfidence  float64 `json:"matchOverviewToReference_confidence" dynamodbav:"matchOverviewToReference_confidence"`
+	OverviewExplanation      string  `json:"overview_explanation" dynamodbav:"overview_explanation"`
 }
 
 // API Response structures
 type TransactionResponse struct {
-	ID                        string               `json:"id"`
-	Timestamp                 time.Time            `json:"timestamp"`
-	ProductID                 string               `json:"productId"`
-	ProductCategory           string               `json:"productCategory"`
-	UploadedLabelImageKey     string               `json:"uploadedLabelImageKey"`
-	UploadedOverviewImageKey  string               `json:"uploadedOverviewImageKey"`
-	UploadedReferenceImageKey string               `json:"uploadedReferenceImageKey"`
-	VerificationResult        string               `json:"verificationResult"`
-	OverallConfidence         float64              `json:"overallConfidence"`
-	LabelVerification         VerificationDetail   `json:"labelVerification"`
-	OverviewVerification      VerificationDetail   `json:"overviewVerification"`
-	ImageAccess               ImageAccessData      `json:"imageAccess"`
-	AIAnalysis                AIAnalysisData       `json:"aiAnalysis"`
-	RawResponse               BedrockResponse      `json:"rawResponse"`
-	Metadata                  TransactionMetadata  `json:"metadata"`
+	ID                        string              `json:"id"`
+	Timestamp                 time.Time           `json:"timestamp"`
+	ProductID                 string              `json:"productId"`
+	ProductCategory           string              `json:"productCategory"`
+	UploadedLabelImageKey     string              `json:"uploadedLabelImageKey"`
+	UploadedOverviewImageKey  string              `json:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey string              `json:"uploadedReferenceImageKey"`
+	VerificationResult        string              `json:"verificationResult"`
+	OverallConfidence         float64             `json:"overallConfidence"`
+	LabelVerification         VerificationDetail  `json:"labelVerification"`
+	OverviewVerification      VerificationDetail  `json:"overviewVerification"`
+	ImageAccess               ImageAccessData     `json:"imageAccess"`
+	AIAnalysis                AIAnalysisData      `json:"aiAnalysis"`
+	RawResponse               BedrockResponse     `json:"rawResponse"`
+	Metadata                  TransactionMetadata `json:"metadata"`
 }
 
 type VerificationDetail struct {
@@ -145,6 +146,17 @@ var (
 	awsConfig     aws.Config
 )
 
+// removeAmzSDKRequest strips the SDK's default amz-sdk-request middleware so
+// that the generated presigned URLs do not include the amz-sdk-request header
+// in the signed headers list.
+func removeAmzSDKRequest(stack *middleware.Stack) error {
+	_, err := stack.Finalize.Remove("RetryMetricsHeader")
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		return nil
+	}
+	return err
+}
+
 // Initialize AWS services and configuration
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -187,7 +199,13 @@ func init() {
 	// Initialize AWS clients
 	dynamoClient = dynamodb.NewFromConfig(cfg)
 	s3Client = s3.NewFromConfig(cfg)
-	presignClient = s3.NewPresignClient(s3Client)
+	presignClient = s3.NewPresignClient(s3Client,
+		func(po *s3.PresignOptions) {
+			po.ClientOptions = append(po.ClientOptions,
+				func(o *s3.Options) {
+					o.APIOptions = append(o.APIOptions, removeAmzSDKRequest)
+				})
+		})
 
 	log.Println("AWS DynamoDB and S3 clients initialized successfully")
 }
@@ -491,7 +509,7 @@ func generateImageAccessURLs(ctx context.Context, requestID string, record *Tran
 // Normalize S3 key to handle URL-encoded characters and special characters
 func normalizeS3Key(key string) (string, error) {
 	log.Printf("Normalizing S3 key: original='%s'", key)
-	
+
 	// URL decode the key to handle encoded characters like %28, %29, %C3%8CNH
 	decodedKey, err := url.QueryUnescape(key)
 	if err != nil {
@@ -547,14 +565,13 @@ func generatePresignedURL(ctx context.Context, requestID, key string) (string, s
 
 	// Check if object exists before generating presigned URL
 	if err := checkS3ObjectExists(ctx, bucket, normalizedKey); err != nil {
-		log.Printf("RequestID: %s - S3 object check failed: bucket=%s, key=%s, error=%v", 
+		log.Printf("RequestID: %s - S3 object check failed: bucket=%s, key=%s, error=%v",
 			requestID, bucket, normalizedKey, err)
 		return "", "", fmt.Errorf("S3 object not accessible: %w", err)
 	}
 
-	// Generate presigned URL using fresh presign client
-	freshPresignClient := s3.NewPresignClient(s3Client)
-	request, err := freshPresignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+	// Generate presigned URL using the global presign client
+	request, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(normalizedKey),
 	}, func(opts *s3.PresignOptions) {
