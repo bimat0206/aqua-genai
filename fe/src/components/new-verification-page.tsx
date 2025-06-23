@@ -175,7 +175,8 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
     image: ImageFile | null;
     explanation: string | null;
     confidence: number | null;
-  }> = ({ isOpen, onClose, type, image, explanation, confidence }) => {
+    matchStatus?: VerificationMatchStatus;
+  }> = ({ isOpen, onClose, type, image, explanation, confidence, matchStatus }) => {
     if (!isOpen) return null;
 
     return (
@@ -184,15 +185,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           <div className="sticky top-0 bg-card border-b border-border p-4 flex justify-between items-center">
             <h3 className="text-xl font-bold flex items-center gap-2">
               {type === 'label' ? <FileText size={24}/> : <Camera size={24}/>}
-              {type === 'label' ? 'Label Analysis' : 'Overview Analysis'}
-              <span className={cn(
-                "px-2 py-1 text-xs font-semibold rounded-full ml-2",
-                confidence && confidence >= 0.8 ? 'bg-status-correct/10 text-status-correct' : 
-                confidence && confidence >= 0.5 ? 'bg-status-uncertain/10 text-status-uncertain' :
-                'bg-status-incorrect/10 text-status-incorrect'
-              )}>
-                {explanation ? `Confidence: ${Math.round((confidence || 0) * 100)}%` : 'No Analysis'}
-              </span>
+              {type === 'label' ? 'Label Image Analysis' : 'Overview Image Analysis'}
             </h3>
             <Button
               variant="ghost"
@@ -225,17 +218,35 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
               <div className="flex flex-col h-full">
                 <div className="flex justify-between items-center mb-4">
                   <h4 className="text-lg font-semibold">Analysis</h4>
-                  <button
-                    onClick={() => explanation && handleCopy(explanation, type)}
-                    className="p-2 rounded-md hover:bg-muted/50 transition-colors"
-                    title="Copy analysis"
-                  >
-                    {(type === 'label' ? copiedLabel : copiedOverview) ? (
-                      <Check size={16} className="text-status-correct" />
-                    ) : (
-                      <Copy size={16} className="text-muted-foreground" />
-                    )}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      {explanation && (
+                        <span className="text-sm font-medium text-muted-foreground">
+                          Confidence: {Math.round((confidence || 0) * 100)}%
+                        </span>
+                      )}
+                      <span className={cn(
+                        "px-3 py-1.5 text-sm font-semibold rounded-full",
+                        !explanation ? 'bg-muted/50 text-muted-foreground' :
+                        matchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct border border-status-correct/20' : 
+                        matchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain border border-status-uncertain/20' :
+                        'bg-status-incorrect/10 text-status-incorrect border border-status-incorrect/20'
+                      )}>
+                        {!explanation ? 'No Analysis' : matchStatus}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => explanation && handleCopy(explanation, type)}
+                      className="p-2 rounded-md hover:bg-muted/50 transition-colors"
+                      title="Copy analysis"
+                    >
+                      {(type === 'label' ? copiedLabel : copiedOverview) ? (
+                        <Check size={16} className="text-status-correct" />
+                      ) : (
+                        <Copy size={16} className="text-muted-foreground" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <div className="bg-muted/20 p-4 rounded-lg flex-1 min-h-0">
                   <div className="text-lg text-foreground leading-relaxed h-full overflow-y-auto">
@@ -828,22 +839,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
 
           return (
             <div className="w-full max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold">Step 5: Verification Result</h2>
-                    <div className="flex items-center gap-3">
-                        <span className="text-sm font-medium text-muted-foreground">
-                            Confidence: {Math.round((confidenceScore || 0) * 100)}%
-                        </span>
-                        <span className={cn(
-                            "px-3 py-1.5 text-sm font-semibold rounded-full",
-                            matchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct border border-status-correct/20' :
-                            matchStatus === 'Incorrect' ? 'bg-status-incorrect/10 text-status-incorrect border border-status-incorrect/20' :
-                            'bg-status-uncertain/10 text-status-uncertain border border-status-uncertain/20'
-                        )}>
-                            {resultText}
-                        </span>
-                    </div>
-                </div>
+                <h2 className="text-xl font-bold mb-6">Step 5: Verification Result</h2>
                 
                 {/* Product Info - Now at the top */}
                 <div className="bg-card p-6 rounded-xl border border-border mb-6">
@@ -898,20 +894,20 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
                             <div className="flex justify-between items-center mb-4">
                                 <h4 className="text-lg font-bold flex items-center gap-2">
                                     <FileText size={20}/>
-                                    Label Analysis
+                                    Label Image Analysis
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     {labelExplanation && (
-                                        <span className="text-xs font-medium text-muted-foreground">
-                                            {Math.round((labelConfidence || 0) * 100)}%
+                                        <span className="text-sm font-medium text-muted-foreground">
+                                            Confidence: {Math.round((labelConfidence || 0) * 100)}%
                                         </span>
                                     )}
                                     <span className={cn(
-                                        "px-2 py-1 text-xs font-semibold rounded-full",
+                                        "px-3 py-1.5 text-sm font-semibold rounded-full",
                                         !labelExplanation ? 'bg-muted/50 text-muted-foreground' :
-                                        labelMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct' : 
-                                        labelMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain' :
-                                        'bg-status-incorrect/10 text-status-incorrect'
+                                        labelMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct border border-status-correct/20' : 
+                                        labelMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain border border-status-uncertain/20' :
+                                        'bg-status-incorrect/10 text-status-incorrect border border-status-incorrect/20'
                                     )}>
                                         {!labelExplanation ? 'No Analysis' : labelMatchStatus}
                                     </span>
@@ -970,20 +966,20 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
                             <div className="flex justify-between items-center mb-4">
                                 <h4 className="text-lg font-bold flex items-center gap-2">
                                     <Camera size={20}/>
-                                    Overview Analysis
+                                    Overview Image Analysis
                                 </h4>
                                 <div className="flex items-center gap-2">
                                     {overviewExplanation && (
-                                        <span className="text-xs font-medium text-muted-foreground">
-                                            {Math.round((overviewConfidence || 0) * 100)}%
+                                        <span className="text-sm font-medium text-muted-foreground">
+                                            Confidence: {Math.round((overviewConfidence || 0) * 100)}%
                                         </span>
                                     )}
                                     <span className={cn(
-                                        "px-2 py-1 text-xs font-semibold rounded-full",
+                                        "px-3 py-1.5 text-sm font-semibold rounded-full",
                                         !overviewExplanation ? 'bg-muted/50 text-muted-foreground' :
-                                        overviewMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct' : 
-                                        overviewMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain' :
-                                        'bg-status-incorrect/10 text-status-incorrect'
+                                        overviewMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct border border-status-correct/20' : 
+                                        overviewMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain border border-status-uncertain/20' :
+                                        'bg-status-incorrect/10 text-status-incorrect border border-status-incorrect/20'
                                     )}>
                                         {!overviewExplanation ? 'No Analysis' : overviewMatchStatus}
                                     </span>
@@ -1060,6 +1056,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           image={labelImage}
           explanation={verificationResult?.labelExplanation || null}
           confidence={verificationResult?.labelConfidence || null}
+          matchStatus={verificationResult?.labelMatchStatus}
         />
         
         <ExpandedModal
@@ -1069,6 +1066,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           image={overviewImage}
           explanation={verificationResult?.overviewExplanation || null}
           confidence={verificationResult?.overviewConfidence || null}
+          matchStatus={verificationResult?.overviewMatchStatus}
         />
 
         <div className={cn("w-full", (currentStep === 2 || currentStep === 3 || currentStep === 4 || currentStep === 5) ? 'max-w-7xl' : 'max-w-5xl')}> 

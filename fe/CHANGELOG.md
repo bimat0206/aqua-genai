@@ -20,11 +20,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enhanced error output formatting with emoji indicators
 
 ### Changed
-- **Step 5 Verification Result UI**: Updated status display to use API response directly
+- **Step 5 Verification Result UI**: Major UI improvements and API integration updates
   - Status badges now show actual API-returned status (Correct/Incorrect/Uncertain) instead of calculating from confidence scores
   - Confidence scores displayed to the left of status badges in muted text
   - Added separate status tracking for label and overview verifications
   - Enhanced `ExtendedVerificationResult` interface with `labelMatchStatus` and `overviewMatchStatus` fields
+  - Updated status badge sizing to match consistent design (increased from `text-xs px-2 py-1` to `text-sm px-3 py-1.5`)
+  - Added border styling to status badges for better visual hierarchy
+  - Renamed section headers for clarity: "Label Analysis" → "Label Image Analysis", "Overview Analysis" → "Overview Image Analysis"
+  - Removed overall status badge from Step 5 header for cleaner design
+  - Enhanced expanded modal UI with consistent badge styling and repositioned elements
+
+- **Expanded Modal Improvements**: Updated the expanded view for Label and Overview Image Analysis
+  - Moved status badge and confidence score from modal header to Analysis section header
+  - Positioned badge and confidence score on the right side next to copy button
+  - Maintained consistent styling with main Step 5 cards
+  - Updated modal to use actual API status instead of calculated values
 
 ## [1.1] - 2025-06-23
 
