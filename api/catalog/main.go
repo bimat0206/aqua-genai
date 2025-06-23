@@ -16,15 +16,16 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/smithy-go/middleware"
 	//"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 // Configuration structure
 type Config struct {
-	DatasetBucket       string
-	Region              string
-	PresignedURLExpiry  time.Duration
-	LogLevel            string
+	DatasetBucket      string
+	Region             string
+	PresignedURLExpiry time.Duration
+	LogLevel           string
 }
 
 // Response structures
@@ -103,6 +104,17 @@ var (
 	appConfig     *Config
 )
 
+// removeAmzSDKRequest removes the default amz-sdk-request header middleware
+// added by the AWS SDK which can cause signature mismatches when validating
+// presigned URLs in certain environments.
+func removeAmzSDKRequest(stack *middleware.Stack) error {
+	_, err := stack.Finalize.Remove("RetryMetricsHeader")
+	if err != nil && strings.Contains(err.Error(), "not found") {
+		return nil
+	}
+	return err
+}
+
 // Category definitions matching the existing system
 var categoryDefinitions = map[string]Category{
 	"REF": {
@@ -138,7 +150,7 @@ var categoryDefinitions = map[string]Category{
 // Initialize AWS services and configuration
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	
+
 	// Load configuration from environment variables
 	appConfig = &Config{
 		DatasetBucket:      os.Getenv("AWS_DATASET_BUCKET"),
@@ -157,7 +169,7 @@ func init() {
 		}
 	}
 
-	log.Printf("Initializing Catalog API with config: bucket=%s, region=%s, expiry=%v", 
+	log.Printf("Initializing Catalog API with config: bucket=%s, region=%s, expiry=%v",
 		appConfig.DatasetBucket, appConfig.Region, appConfig.PresignedURLExpiry)
 
 	// Initialize AWS configuration
@@ -169,8 +181,14 @@ func init() {
 
 	// Initialize S3 clients
 	s3Client = s3.NewFromConfig(cfg)
-	presignClient = s3.NewPresignClient(s3Client)
-	
+	presignClient = s3.NewPresignClient(s3Client,
+		func(po *s3.PresignOptions) {
+			po.ClientOptions = append(po.ClientOptions,
+				func(o *s3.Options) {
+					o.APIOptions = append(o.APIOptions, removeAmzSDKRequest)
+				})
+		})
+
 	log.Println("AWS S3 clients initialized successfully")
 }
 
@@ -345,7 +363,7 @@ func handleImagesDiscovery(ctx context.Context, requestID string, queryParams ma
 		},
 	}
 
-	log.Printf("RequestID: %s - Images discovery completed for %s/%s: %d total images (%d label, %d overview)", 
+	log.Printf("RequestID: %s - Images discovery completed for %s/%s: %d total images (%d label, %d overview)",
 		requestID, category, productID, totalImages, len(imagesData.LabelImages), len(imagesData.OverviewImages))
 	return response, nil
 }
@@ -426,7 +444,7 @@ func discoverProductsInCategory(ctx context.Context, requestID, categoryPrefix, 
 // Check for label folders (TEM NL)
 func checkLabelFolders(ctx context.Context, requestID, productPrefix string) (bool, []string) {
 	labelPrefix := productPrefix + "TEM NL/"
-	
+
 	input := &s3.ListObjectsV2Input{
 		Bucket:  aws.String(appConfig.DatasetBucket),
 		Prefix:  aws.String(labelPrefix),
@@ -456,7 +474,7 @@ func checkOverviewFolders(ctx context.Context, requestID, productPrefix string) 
 
 	for _, folderName := range overviewFolderNames {
 		overviewPrefix := productPrefix + folderName + "/"
-		
+
 		input := &s3.ListObjectsV2Input{
 			Bucket:  aws.String(appConfig.DatasetBucket),
 			Prefix:  aws.String(overviewPrefix),
@@ -613,7 +631,7 @@ func generatePresignedURL(ctx context.Context, requestID, key string) (string, e
 func isImageFile(key string) bool {
 	lowerKey := strings.ToLower(key)
 	imageExtensions := []string{".jpg", ".jpeg", ".png", ".webp"}
-	
+
 	for _, ext := range imageExtensions {
 		if strings.HasSuffix(lowerKey, ext) {
 			return true
@@ -625,7 +643,7 @@ func isImageFile(key string) bool {
 // Get content type based on file extension
 func getContentType(key string) string {
 	lowerKey := strings.ToLower(key)
-	
+
 	if strings.HasSuffix(lowerKey, ".jpg") || strings.HasSuffix(lowerKey, ".jpeg") {
 		return "image/jpeg"
 	} else if strings.HasSuffix(lowerKey, ".png") {
@@ -633,7 +651,7 @@ func getContentType(key string) string {
 	} else if strings.HasSuffix(lowerKey, ".webp") {
 		return "image/webp"
 	}
-	
+
 	return "image/jpeg" // Default fallback
 }
 
