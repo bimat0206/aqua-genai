@@ -160,6 +160,26 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
     }
   };
 
+  // Determine individual statuses for overview and label
+  let overviewStatus: VerificationMatchStatus = 'Uncertain';
+  let labelStatus: VerificationMatchStatus = 'Uncertain';
+  
+  if (transactionDetail) {
+    // Use detailed transaction data
+    const labelResult = transactionDetail.labelVerification?.result?.toLowerCase();
+    const overviewResult = transactionDetail.overviewVerification?.result?.toLowerCase();
+    
+    labelStatus = labelResult === 'yes' ? 'Correct' : labelResult === 'no' ? 'Incorrect' : 'Uncertain';
+    overviewStatus = overviewResult === 'yes' ? 'Correct' : overviewResult === 'no' ? 'Incorrect' : 'Uncertain';
+  } else {
+    // Fallback: use overall status for both (not ideal but maintains backward compatibility)
+    overviewStatus = item.result.matchStatus;
+    labelStatus = item.result.matchStatus;
+  }
+  
+  const overviewStatusInfo = statusConfig[overviewStatus];
+  const labelStatusInfo = statusConfig[labelStatus];
+
   // Helper function to format AI text with line breaks after sentences
   const formatAIText = (text: string) => {
     if (!text) return null;
@@ -279,8 +299,8 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
             <Card className="bg-background shadow-md h-full flex flex-col">
               <CardHeader className="flex-row items-center justify-between">
                 <CardTitle className="text-xl text-primary">Overview Image Analysis</CardTitle>
-                <Badge className={`${statusInfo.badgeClass} font-bold`}>
-                  {statusInfo.name}
+                <Badge className={`${overviewStatusInfo.badgeClass} font-bold`}>
+                  {overviewStatusInfo.name}
                 </Badge>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col gap-4">
@@ -318,8 +338,8 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
             <Card className="bg-background shadow-md h-full flex flex-col">
               <CardHeader className="flex-row items-center justify-between">
                 <CardTitle className="text-xl text-primary">Label Image Analysis</CardTitle>
-                <Badge className={`${statusInfo.badgeClass} font-bold`}>
-                  {statusInfo.name}
+                <Badge className={`${labelStatusInfo.badgeClass} font-bold`}>
+                  {labelStatusInfo.name}
                 </Badge>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col gap-4">

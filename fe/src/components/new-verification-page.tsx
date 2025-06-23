@@ -344,8 +344,21 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
       const result = await submitVerification(aiInput);
       
       // Map backend response to frontend format
+      // Determine match status based on both label and overview verification results
+      let matchStatus: VerificationMatchStatus;
+      const labelMatch = result.matchLabelToReference?.toLowerCase();
+      const overviewMatch = result.matchOverviewToReference?.toLowerCase();
+      
+      if (labelMatch === 'yes' && overviewMatch === 'yes') {
+        matchStatus = 'Correct';
+      } else if (labelMatch === 'no' || overviewMatch === 'no') {
+        matchStatus = 'Incorrect';
+      } else {
+        matchStatus = 'Uncertain';
+      }
+      
       const mappedResult = {
-        matchStatus: 'Correct' as VerificationMatchStatus, // Default, will be determined by backend response
+        matchStatus,
         confidenceScore: Math.max(
           result.matchLabelToReference_confidence || 0,
           result.matchOverviewToReference_confidence || 0

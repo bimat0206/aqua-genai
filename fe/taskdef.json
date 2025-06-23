@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:879654127886:task-definition/aqua-genai-task-dev-f0wt:10",
+    "taskDefinitionArn": "arn:aws:ecs:ap-southeast-1:879654127886:task-definition/aqua-genai-task-dev-f0wt:6",
     "containerDefinitions": [
         {
             "name": "react-frontend",
@@ -41,7 +41,7 @@
     "taskRoleArn": "arn:aws:iam::879654127886:role/aqua-genai-task-role-dev-f0wt",
     "executionRoleArn": "arn:aws:iam::879654127886:role/aqua-genai-task-execution-role-dev-f0wt",
     "networkMode": "awsvpc",
-    "revision": 10,
+    "revision": 6,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -80,6 +80,6 @@
     ],
     "cpu": "256",
     "memory": "512",
-    "registeredAt": "2025-06-23T14:06:34.011000+07:00",
+    "registeredAt": "2025-06-23T09:41:26.541000+07:00",
     "registeredBy": "arn:aws:iam::879654127886:user/manh.hoang"
 }

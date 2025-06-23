@@ -1,15 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to build and deploy the React frontend application to AWS ECR and ECS
 
-set -e
+set -euo pipefail
 
 # Configuration
 PROJECT_NAME="aqua-genai"
 REGION="ap-southeast-1"
-ECR_REPO_NAME="" # Will be determined from terraform output
-ECS_CLUSTER="" # Will be determined from terraform output
-ECS_SERVICE="" # Will be determined from terraform output
+ECR_REPO_NAME="aqua-genai-react-frontend-f0wt" # ECR repository name
+ECS_CLUSTER="aqua-genai-service-dev-f0wt" # ECS cluster name
+ECS_SERVICE="aqua-genai-react-frontend-service-dev-f0wt" # ECS service name
+
+# AWS CLI quiet mode
+export AWS_PAGER=""
+QUIET="--no-cli-pager"
 
 # Colors for output
 RED='\033[0;31m'
@@ -54,35 +58,8 @@ check_dependencies() {
     log_info "All dependencies are installed."
 }
 
-get_terraform_outputs() {
-    log_info "Getting Terraform outputs..."
-    
-    # Change to the infra directory
-    cd ../infra
-    
-    # Get the ECR repository URL
-    ECR_REPO_URL=$(terraform output -json ecr_repository_urls | jq -r '.react_frontend')
-    if [ -z "$ECR_REPO_URL" ]; then
-        log_error "Failed to get ECR repository URL from Terraform output."
-        exit 1
-    fi
-    
-    # Extract the repository name from the URL
-    ECR_REPO_NAME=$(echo $ECR_REPO_URL | cut -d'/' -f2)
-    
-    # Get the ECS cluster ARN
-    ECS_CLUSTER=$(terraform output -json ecs_cluster_arn | jq -r '.')
-    if [ -z "$ECS_CLUSTER" ]; then
-        log_error "Failed to get ECS cluster ARN from Terraform output."
-        exit 1
-    fi
-    
-    # Get the ECS service name
-    ECS_SERVICE=$(terraform output -json ecs_service_name | jq -r '.')
-    if [ -z "$ECS_SERVICE" ]; then
-        log_error "Failed to get ECS service name from Terraform output."
-        exit 1
-    fi
+validate_aws_resources() {
+    log_info "Validating AWS resources..."
     
     # Get the AWS account ID
     ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -91,9 +68,30 @@ get_terraform_outputs() {
         exit 1
     fi
     
-    # Change back to the frontend directory
-    cd ../fe
+    # Check if ECS cluster exists
+    if ! aws ecs describe-clusters --clusters "$ECS_CLUSTER" --region "$REGION" $QUIET > /dev/null 2>&1; then
+        log_error "ECS cluster '$ECS_CLUSTER' not found."
+        exit 1
+    fi
     
+    # Check if ECR repository exists
+    if ! aws ecr describe-repositories --repository-names "$ECR_REPO_NAME" --region "$REGION" $QUIET > /dev/null 2>&1; then
+        log_error "ECR repository '$ECR_REPO_NAME' not found."
+        exit 1
+    fi
+    
+    # Try to find the ECS service
+    SERVICES=$(aws ecs list-services --cluster "$ECS_CLUSTER" --region "$REGION" $QUIET --query 'serviceArns' --output text)
+    if [ -z "$SERVICES" ]; then
+        log_warn "No services found in cluster '$ECS_CLUSTER'. You may need to create the service first."
+    else
+        log_info "Found services in cluster:"
+        aws ecs list-services --cluster "$ECS_CLUSTER" --region "$REGION" $QUIET --query 'serviceArns' --output table
+    fi
+    
+    ECR_REPO_URL="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME"
+    
+    log_info "AWS Account ID: $ACCOUNT_ID"
     log_info "ECR Repository URL: $ECR_REPO_URL"
     log_info "ECS Cluster: $ECS_CLUSTER"
     log_info "ECS Service: $ECS_SERVICE"
@@ -102,10 +100,14 @@ get_terraform_outputs() {
 build_docker_image() {
     log_info "Building Docker image..."
     
-    # Build the Docker image
-    docker build -t $PROJECT_NAME-react-frontend .
+    # Get the AWS account ID
+    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
     
-    log_info "Docker image built successfully."
+    # Build the Docker image with platform specification
+    IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest"
+    docker build --platform linux/amd64 -t "$IMAGE_URI" .
+    
+    log_info "Docker image built successfully: $IMAGE_URI"
 }
 
 push_to_ecr() {
@@ -113,53 +115,116 @@ push_to_ecr() {
     
     # Get the AWS account ID
     ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+    IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest"
     
     # Authenticate with ECR
-    aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
-    
-    # Tag the Docker image
-    docker tag $PROJECT_NAME-react-frontend:latest $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest
+    aws ecr get-login-password --region $REGION $QUIET \
+        | docker login --username AWS --password-stdin "$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
     
     # Push the Docker image to ECR
-    docker push $ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest
+    docker push "$IMAGE_URI"
     
-    log_info "Docker image pushed to ECR successfully."
+    log_info "Docker image pushed to ECR successfully: $IMAGE_URI"
 }
 
 update_ecs_service() {
     log_info "Updating ECS service..."
     
-    # Force a new deployment of the ECS service
-    aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment --region $REGION
+    # Get current task definition
+    log_info "Getting current task definition..."
+    CURRENT_TASK_DEF_ARN=$(aws ecs describe-services $QUIET \
+        --cluster "$ECS_CLUSTER" \
+        --services "$ECS_SERVICE" \
+        --region "$REGION" \
+        --query 'services[0].taskDefinition' \
+        --output text)
+    
+    if [ "$CURRENT_TASK_DEF_ARN" = "None" ] || [ -z "$CURRENT_TASK_DEF_ARN" ]; then
+        log_error "Failed to get current task definition ARN"
+        exit 1
+    fi
+    
+    log_info "Current task definition: $CURRENT_TASK_DEF_ARN"
+    
+    # Clone current task definition
+    aws ecs describe-task-definition $QUIET \
+        --task-definition "$CURRENT_TASK_DEF_ARN" \
+        --region "$REGION" \
+        --query 'taskDefinition' \
+        --output json > taskdef.json
+    
+    # Get the AWS account ID and construct image URI
+    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+    IMAGE_URI="$ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/$ECR_REPO_NAME:latest"
+    
+    # Update task definition with new image only
+    jq --arg image_uri "$IMAGE_URI" '
+        del(
+            .taskDefinitionArn,
+            .revision,
+            .status,
+            .requiresAttributes,
+            .compatibilities,
+            .registeredAt,
+            .registeredBy,
+            .deregisteredAt
+        )
+        | .containerDefinitions[0].image = $image_uri
+    ' taskdef.json > taskdef-updated.json
+    
+    log_info "Registering new task definition..."
+    
+    # Register new task definition
+    NEW_TASK_DEF_ARN=$(aws ecs register-task-definition $QUIET \
+        --cli-input-json file://taskdef-updated.json \
+        --region "$REGION" \
+        --query 'taskDefinition.taskDefinitionArn' \
+        --output text)
+    
+    if [ -z "$NEW_TASK_DEF_ARN" ]; then
+        log_error "Failed to register new task definition"
+        exit 1
+    fi
+    
+    log_info "New task definition registered: $NEW_TASK_DEF_ARN"
+    
+    # Update service with new task definition
+    log_info "Updating ECS service with new task definition..."
+    aws ecs update-service $QUIET \
+        --cluster "$ECS_CLUSTER" \
+        --service "$ECS_SERVICE" \
+        --task-definition "$NEW_TASK_DEF_ARN" \
+        --region "$REGION" \
+        > /dev/null
     
     log_info "ECS service updated successfully."
 }
 
 wait_for_deployment() {
-    log_info "Waiting for deployment to complete..."
-    
-    # Get the deployment ID
-    DEPLOYMENT_ID=$(aws ecs describe-services --cluster $ECS_CLUSTER --services $ECS_SERVICE --region $REGION | jq -r '.services[0].deployments[0].id')
+    log_info "Waiting for deployment to stabilize..."
     
     # Wait for the deployment to complete
-    aws ecs wait services-stable --cluster $ECS_CLUSTER --services $ECS_SERVICE --region $REGION
+    aws ecs wait services-stable $QUIET \
+        --cluster "$ECS_CLUSTER" \
+        --services "$ECS_SERVICE" \
+        --region "$REGION"
     
-    log_info "Deployment completed successfully."
+    log_info "🎉 Deployment completed successfully!"
+    log_info "✅ Service is running with secrets from:"
+    log_info "   - aqua-genai-dev-secret-api-key-f0wt"
+    log_info "   - aqua-genai-dev-secret-ecs-config-f0wt"
 }
 
 show_application_url() {
     log_info "Getting application URL..."
     
-    # Change to the infra directory
-    cd ../infra
-    
-    # Get the application URL
-    APP_URL=$(terraform output -json react_frontend_url | jq -r '.')
-    
-    # Change back to the frontend directory
-    cd ../fe
-    
-    log_info "Application URL: $APP_URL"
+    # Try to get load balancer DNS name
+    if aws elbv2 describe-load-balancers --names "aqua-genai-lb-dev-f0wt" --region "$REGION" $QUIET > /dev/null 2>&1; then
+        LB_DNS=$(aws elbv2 describe-load-balancers --names "aqua-genai-lb-dev-f0wt" --region "$REGION" $QUIET --query 'LoadBalancers[0].DNSName' --output text)
+        log_info "Application URL: http://$LB_DNS"
+    else
+        log_warn "Load balancer not found. Check ECS service configuration."
+    fi
 }
 
 # Main script
@@ -170,17 +235,17 @@ case "$1" in
         build_docker_image
         ;;
     push)
-        get_terraform_outputs
+        validate_aws_resources
         push_to_ecr
         ;;
     deploy)
-        get_terraform_outputs
+        validate_aws_resources
         update_ecs_service
         wait_for_deployment
         show_application_url
         ;;
     all)
-        get_terraform_outputs
+        validate_aws_resources
         build_docker_image
         push_to_ecr
         update_ecs_service

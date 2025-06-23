@@ -5,6 +5,49 @@ All notable changes to the Aqua GenAI Frontend will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1] - 2025-06-23
+
+### Added
+- **Enhanced ECS Deployment**: Robust deployment script with error handling and task definition management
+- **AWS Resource Validation**: Comprehensive validation script for ECS cluster, secrets, and load balancer
+- **Deployment Stability Checks**: Automatic waiting for service stabilization during deployments
+- **Task Definition Versioning**: Automatic cloning and updating of task definitions with new images and secrets
+- **Secrets Integration**: Proper injection of AWS Secrets Manager secrets into ECS containers
+- **Platform-Specific Builds**: Docker builds with `--platform linux/amd64` for ECS compatibility
+- **Deployment Documentation**: Comprehensive deployment guides and implementation summaries
+
+### Changed
+- **Deploy Script Enhancement**: Updated `deploy.sh` with reference script improvements including:
+  - Robust error handling with `set -euo pipefail`
+  - AWS CLI quiet mode for cleaner output
+  - Proper ECR authentication and image pushing
+  - Task definition management and registration
+- **Task Definition Updates**: Enhanced `taskdef.json` with proper secrets configuration
+- **Documentation Updates**: Updated deployment guides with new procedures and troubleshooting
+
+### Fixed
+- **ECS Service Updates**: Fixed service update process to properly register new task definitions
+- **Secrets Injection**: Corrected secrets injection from AWS Secrets Manager into containers
+- **Container Configuration**: Fixed environment variable and secrets mapping in task definitions
+
+### Infrastructure
+- **ECS Cluster Integration**: Full integration with `aqua-genai-service-dev-f0wt` cluster
+- **Load Balancer Configuration**: Proper integration with `aqua-genai-lb-dev-f0wt` load balancer
+- **ECR Repository**: Configured for `aqua-genai-react-frontend-f0wt` repository
+- **Secrets Manager**: Integration with production secrets:
+  - `aqua-genai-dev-secret-api-key-f0wt`
+  - `aqua-genai-dev-secret-ecs-config-f0wt`
+
+### Security
+- **Task Definition Secrets**: Proper secrets configuration in ECS task definitions
+- **IAM Role Integration**: Utilizes existing task and execution roles for secrets access
+- **Container Security**: Maintains non-root user execution in containers
+
+### Operations
+- **Deployment Workflow**: Streamlined deployment process with validation and stability checks
+- **Resource Validation**: Pre-deployment validation of AWS resources
+- **Monitoring Integration**: Enhanced logging and monitoring for deployment processes
+
 ## [1.0] - 2025-06-23
 
 ### Added

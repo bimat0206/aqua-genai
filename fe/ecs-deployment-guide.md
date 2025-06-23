@@ -60,26 +60,60 @@ The app now supports two environments:
 
 ## Deployment Steps
 
-1. **Build Docker Image**:
+### Using the Deploy Script (Recommended)
+
+The `deploy.sh` script has been updated with robust error handling and automatic task definition management:
+
+1. **Validate AWS Resources**:
    ```bash
-   docker build -t aqua-genai-react-frontend .
+   ./validate-aws-resources.sh
    ```
 
-2. **Tag and Push to ECR**:
+2. **Build, Push, and Deploy**:
    ```bash
-   docker tag aqua-genai-react-frontend:latest 879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-react-frontend-f0wt:latest
+   ./deploy.sh all
+   ```
+
+3. **Individual Commands**:
+   ```bash
+   # Build Docker image only
+   ./deploy.sh build
+   
+   # Push to ECR only
+   ./deploy.sh push
+   
+   # Deploy to ECS only
+   ./deploy.sh deploy
+   
+   # Show application URL
+   ./deploy.sh url
+   ```
+
+### Manual Deployment (Advanced)
+
+1. **Build Docker Image**:
+   ```bash
+   docker build --platform linux/amd64 -t 879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-react-frontend-f0wt:latest .
+   ```
+
+2. **Push to ECR**:
+   ```bash
+   aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 879654127886.dkr.ecr.ap-southeast-1.amazonaws.com
    docker push 879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-react-frontend-f0wt:latest
    ```
 
-3. **Update ECS Task Definition**:
+3. **Update ECS Service**:
    ```bash
-   aws ecs register-task-definition --cli-input-json file://taskdef.json
+   aws ecs update-service --cluster aqua-genai-service-dev-f0wt --service aqua-genai-react-frontend-service-dev-f0wt --force-new-deployment --region ap-southeast-1
    ```
 
-4. **Update ECS Service**:
-   ```bash
-   aws ecs update-service --cluster <cluster-name> --service <service-name> --task-definition aqua-genai-task-dev-f0wt
-   ```
+### Key Improvements in Deploy Script
+
+- **Error Handling**: Uses `set -euo pipefail` for robust error handling
+- **Task Definition Management**: Automatically clones current task definition and updates with new image and secrets
+- **Secrets Integration**: Properly injects AWS Secrets Manager secrets into container
+- **Deployment Stability**: Waits for service to stabilize before completing
+- **Resource Validation**: Checks AWS resources exist before deployment
 
 ## Local Development
 

@@ -67,9 +67,23 @@ function convertToLegacyFormat(apiData: TransactionData): LegacyTransactionData 
     // Parse timestamp to Unix timestamp
     const timestamp = new Date(apiData.timestamp).getTime();
     
+    // Determine match status based on labelMatch and overviewMatch results
+    let matchStatus: VerificationMatchStatus;
+    const labelResult = apiData.labelMatch?.result?.toLowerCase();
+    const overviewResult = apiData.overviewMatch?.result?.toLowerCase();
+    
+    if (labelResult === 'yes' && overviewResult === 'yes') {
+        matchStatus = 'Correct';
+    } else if (labelResult === 'no' || overviewResult === 'no') {
+        matchStatus = 'Incorrect';
+    } else {
+        // Fall back to verificationResult if available, otherwise 'Uncertain'
+        matchStatus = apiData.verificationResult ? convertVerificationResult(apiData.verificationResult) : 'Uncertain';
+    }
+    
     // Create verification result
     const verificationResult: VerificationResult = {
-        matchStatus: convertVerificationResult(apiData.verificationResult),
+        matchStatus,
         confidenceScore: apiData.overallConfidence,
         explanation: `Label: ${apiData.labelMatch.explanation}\n\nOverview: ${apiData.overviewMatch.explanation}`,
         uploadedOverviewImage: apiData.uploadedOverviewImageKey,

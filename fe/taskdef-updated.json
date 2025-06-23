@@ -24,7 +24,16 @@
       ],
       "mountPoints": [],
       "volumesFrom": [],
-      "secrets": [],
+      "secrets": [
+        {
+          "name": "API_KEY_SECRET_NAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:879654127886:secret:aqua-genai-dev-secret-api-key-f0wt"
+        },
+        {
+          "name": "CONFIG_SECRET_NAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-southeast-1:879654127886:secret:aqua-genai-dev-secret-ecs-config-f0wt"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {

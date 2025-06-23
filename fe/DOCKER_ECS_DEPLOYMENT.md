@@ -34,10 +34,10 @@ output: 'standalone'
 - Enables optimized Docker deployment
 - Reduces image size and improves startup time
 
-### 3. Health Check API (`fe/src/app/api/health/route.ts`)
+### 3. Health Check API (`fe/src/app/health/route.ts`)
 
 #### **Created Health Endpoint**
-- Provides `/api/health` endpoint for ECS health checks
+- Provides `/health` endpoint for ECS health checks
 - Returns JSON with status, timestamp, uptime, environment info
 - Handles errors gracefully
 
@@ -97,7 +97,7 @@ terraform apply
 
 ### 3. Verify Deployment
 - Check ECS service status in AWS Console
-- Test health endpoint: `https://<load-balancer-url>/api/health`
+- Test health endpoint: `https://<load-balancer-url>/health`
 - Monitor CloudWatch logs for container startup
 
 ## Testing
@@ -110,7 +110,7 @@ cd fe
 
 ### Health Check Testing
 ```bash
-curl -f http://localhost:8080/api/health
+curl -f http://localhost:8080/health
 ```
 
 ## Key Benefits
@@ -130,7 +130,7 @@ curl -f http://localhost:8080/api/health
 3. Ensure ECR image is built and pushed
 
 ### Health Check Failures
-1. Verify `/api/health` endpoint is accessible
+1. Verify `/health` endpoint is accessible
 2. Check container port mapping (80)
 3. Review load balancer target group configuration
 
