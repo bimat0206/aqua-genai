@@ -20,6 +20,7 @@ Based on the verification record, the DynamoDB table contains:
 - `productCategory` - Product category (REF, WM, TV, OTHER)
 - `uploadedLabelImageKey` - S3 key for uploaded label image
 - `uploadedOverviewImageKey` - S3 key for uploaded overview image
+- `uploadedReferenceImageKey` - S3 key for uploaded reference image
 - `bedrockResponse` - Complete AI model response with nested structure
 
 ### **BedrockResponse Structure**
@@ -59,6 +60,7 @@ GET /api/v1/history?view=list
       "productCategory": "REF",
       "uploadedLabelImageKey": "dataset/REF/AQR-M466XA(GB)/TEM NL/22ab3ab6-ed75-4999-b3dc-1b7aaf9cb070-image_1731580040127.jpg",
       "uploadedOverviewImageKey": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/20ffd946-63eb-4b55-95a8-790e358c5d00-image_1731580061456.jpg",
+      "uploadedReferenceImageKey": "dataset/REF/AQR-M466XA(GB)/HÌNH WEB/reference-image-12345.jpg",
       "verificationResult": "CORRECT",
       "overallConfidence": 0.935,
       "labelMatch": {
@@ -177,7 +179,7 @@ GET /api/v1/history?view=summary
 
 **Primary Table Structure:**
 - **Partition Key:** `id` (transaction UUID)
-- **Attributes:** `timestamp`, `productId`, `productCategory`, `uploadedLabelImageKey`, `uploadedOverviewImageKey`, `bedrockResponse`
+- **Attributes:** `timestamp`, `productId`, `productCategory`, `uploadedLabelImageKey`, `uploadedOverviewImageKey`, `uploadedReferenceImageKey`, `bedrockResponse`
 
 **Global Secondary Indexes:**
 - **CategoryTimestampIndex:** `productCategory` (PK) + `timestamp` (SK)

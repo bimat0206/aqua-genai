@@ -5,6 +5,31 @@ All notable changes to the Aqua GenAI History API will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0] - 2025-06-19
+
+### Added
+- **uploadedReferenceImageKey field support** - Enhanced history data model to include reference image key
+  - Added `UploadedReferenceImageKey` field to `VerificationRecord` struct
+  - Added `UploadedReferenceImageKey` field to `HistoryItem` struct
+  - Updated DynamoDB attribute mapping to handle the new field
+  - Enhanced data processing to include reference image information in responses
+
+### Changed
+- **API Response Structure** - History responses now include reference image key when available
+- **Data Models** - Updated Go structs to support the new field with proper JSON/DynamoDB tags
+- **Documentation** - Updated design documentation and README with new field examples
+
+### Technical Details
+- Modified `VerificationRecord` and `HistoryItem` structs in `main.go`
+- Updated DynamoDB table structure documentation to include new attribute
+- Added proper JSON marshaling tags for the new field
+- Maintains backward compatibility - existing records without reference images work normally
+
+### Files Modified
+- `main.go` - Core API implementation and data structures
+- `design.md` - Updated API documentation with new field examples
+- `README.md` - Updated response examples to include new field
+
 ## [1.1.0] - 2025-06-18
 
 ### 🐛 Fixed

@@ -37,6 +37,7 @@ type VerificationRecord struct {
 	ProductCategory            string            `json:"productCategory" dynamodbav:"productCategory"`
 	UploadedLabelImageKey      string            `json:"uploadedLabelImageKey" dynamodbav:"uploadedLabelImageKey"`
 	UploadedOverviewImageKey   string            `json:"uploadedOverviewImageKey" dynamodbav:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey  string            `json:"uploadedReferenceImageKey" dynamodbav:"uploadedReferenceImageKey"`
 	BedrockResponse           BedrockResponse    `json:"bedrockResponse" dynamodbav:"bedrockResponse"`
 }
 
@@ -55,8 +56,8 @@ type TokenUsage struct {
 }
 
 type ContentItem struct {
-	Type string `json:"type" dynamodbav:"type"`
-	Text string `json:"text" dynamodbav:"text"`
+	Type string                 `json:"type" dynamodbav:"type"`
+	Text interface{}            `json:"text" dynamodbav:"text"`
 }
 
 // Parsed verification results from AI response
@@ -84,6 +85,7 @@ type HistoryItem struct {
 	ProductCategory            string      `json:"productCategory"`
 	UploadedLabelImageKey      string      `json:"uploadedLabelImageKey"`
 	UploadedOverviewImageKey   string      `json:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey  string      `json:"uploadedReferenceImageKey"`
 	VerificationResult         string      `json:"verificationResult"`
 	OverallConfidence          float64     `json:"overallConfidence"`
 	LabelMatch                 MatchResult `json:"labelMatch"`
@@ -562,20 +564,59 @@ func parseVerificationResults(requestID string, bedrockResponse BedrockResponse)
 		return VerificationResults{}, fmt.Errorf("empty content array in bedrock response")
 	}
 
-	contentText := bedrockResponse.Content[0].Text
-	log.Printf("RequestID: %s - Parsing bedrock content text length: %d", requestID, len(contentText))
-
-	// Handle JSON wrapper removal
-	if strings.HasPrefix(contentText, "```") {
-		contentText = strings.TrimPrefix(contentText, "```json\n")
-		contentText = strings.TrimSuffix(contentText, "\n```")
-	}
-
 	var results VerificationResults
-	err := json.Unmarshal([]byte(contentText), &results)
-	if err != nil {
-		log.Printf("RequestID: %s - Failed to parse verification JSON: %v", requestID, err)
-		return VerificationResults{}, fmt.Errorf("failed to parse verification results JSON: %w", err)
+	
+	// Handle the case where Text is a map (from DynamoDB structure)
+	if textMap, ok := bedrockResponse.Content[0].Text.(map[string]interface{}); ok {
+		log.Printf("RequestID: %s - Parsing verification results from map structure", requestID)
+		
+		// Extract values from the nested map structure
+		if labelMatch, ok := textMap["matchLabelToReference"].(string); ok {
+			results.MatchLabelToReference = labelMatch
+		}
+		if labelConf, ok := textMap["matchLabelToReference_confidence"].(float64); ok {
+			results.MatchLabelConfidence = labelConf
+		} else if labelConfStr, ok := textMap["matchLabelToReference_confidence"].(string); ok {
+			// Handle case where confidence is stored as string
+			if conf, err := strconv.ParseFloat(labelConfStr, 64); err == nil {
+				results.MatchLabelConfidence = conf
+			}
+		}
+		if overviewMatch, ok := textMap["matchOverviewToReference"].(string); ok {
+			results.MatchOverviewToReference = overviewMatch
+		}
+		if overviewConf, ok := textMap["matchOverviewToReference_confidence"].(float64); ok {
+			results.MatchOverviewConfidence = overviewConf
+		} else if overviewConfStr, ok := textMap["matchOverviewToReference_confidence"].(string); ok {
+			// Handle case where confidence is stored as string
+			if conf, err := strconv.ParseFloat(overviewConfStr, 64); err == nil {
+				results.MatchOverviewConfidence = conf
+			}
+		}
+		if labelExp, ok := textMap["label_explanation"].(string); ok {
+			results.LabelExplanation = labelExp
+		}
+		if overviewExp, ok := textMap["overview_explanation"].(string); ok {
+			results.OverviewExplanation = overviewExp
+		}
+	} else if contentText, ok := bedrockResponse.Content[0].Text.(string); ok {
+		// Handle the case where Text is a string (direct JSON)
+		log.Printf("RequestID: %s - Parsing bedrock content text length: %d", requestID, len(contentText))
+		
+		// Handle JSON wrapper removal
+		if strings.HasPrefix(contentText, "```") {
+			contentText = strings.TrimPrefix(contentText, "```json\n")
+			contentText = strings.TrimSuffix(contentText, "\n```")
+		}
+
+		// Try to unmarshal as JSON
+		err := json.Unmarshal([]byte(contentText), &results)
+		if err != nil {
+			log.Printf("RequestID: %s - Failed to parse verification JSON: %v", requestID, err)
+			return VerificationResults{}, fmt.Errorf("failed to parse verification results JSON: %w", err)
+		}
+	} else {
+		return VerificationResults{}, fmt.Errorf("unsupported Text field type in bedrock response")
 	}
 
 	log.Printf("RequestID: %s - Parsed verification results: label=%s (%.2f), overview=%s (%.2f)", 

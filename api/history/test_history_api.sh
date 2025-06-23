@@ -6,8 +6,8 @@
 set -e  # Exit on any error
 
 # Configuration - Update the endpoint to point to history API
-export API_GATEWAY_ENDPOINT="https://p54uxywt9c.execute-api.ap-southeast-1.amazonaws.com/dev/history"
-export API_KEY="5vBzBEoyZv2TgVkFFRsng92wCp4TRWtQ5qZOOPry"
+export API_GATEWAY_ENDPOINT="https://a0sm23hz65.execute-api.ap-southeast-1.amazonaws.com/dev/history"
+export API_KEY="obWsYLQ1jUvQ4xPxglh2ZXHNZUrJSb4JZgTDZs20"
 
 # Test data from the original script
 export PRODUCT_ID='AQR-M466XA(GB)'

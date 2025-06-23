@@ -95,6 +95,7 @@ curl -H "x-api-key: YOUR_API_KEY" \
       "productCategory": "REF",
       "uploadedLabelImageKey": "dataset/REF/AQR-M466XA(GB)/TEM NL/...",
       "uploadedOverviewImageKey": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/...",
+      "uploadedReferenceImageKey": "dataset/REF/AQR-M466XA(GB)/HÌNH WEB/...",
       "verificationResult": "CORRECT",
       "overallConfidence": 0.935,
       "labelMatch": {
