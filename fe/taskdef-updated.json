@@ -1,0 +1,50 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "react-frontend",
+      "image": "879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-react-frontend-f0wt:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "API_KEY_SECRET_NAME",
+          "value": "aqua-genai-dev-secret-api-key-f0wt"
+        },
+        {
+          "name": "CONFIG_SECRET_NAME",
+          "value": "aqua-genai-dev-secret-ecs-config-f0wt"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "secrets": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/ecs/aqua-genai-dev-f0wt",
+          "awslogs-region": "ap-southeast-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "aqua-genai-task-dev-f0wt",
+  "taskRoleArn": "arn:aws:iam::879654127886:role/aqua-genai-task-role-dev-f0wt",
+  "executionRoleArn": "arn:aws:iam::879654127886:role/aqua-genai-task-execution-role-dev-f0wt",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512"
+}

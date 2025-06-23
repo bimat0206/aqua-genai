@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Aqua GenAI Frontend
+Sitemap: /sitemap.xml
