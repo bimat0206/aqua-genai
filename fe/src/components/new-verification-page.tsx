@@ -10,7 +10,7 @@ import ImageBrowser from './image-browser';
 import RefrigeratorIcon from './icons/RefrigeratorIcon';
 import WashingMachineIcon from './icons/WashingMachineIcon';
 import TelevisionIcon from './icons/TelevisionIcon';
-import type { ProductCategory, Product, ImageFile, VerificationMatchStatus } from '@/types';
+import type { ProductCategory, Product, ImageFile, VerificationMatchStatus, ExtendedVerificationResult } from '@/types';
 import { getProductsForCategory, mockImageFiles } from '@/lib/mock-data';
 import { getProducts, getImages, getOverviewImages, getLabelImages, getApiEndpoint, getApiKey, getCategoryCode } from '@/lib/api-client';
 import { analyzeVerificationResult, AnalyzeVerificationResultOutput } from '@/ai/flows/analyze-verification-result';
@@ -41,7 +41,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
   const [availableImages, setAvailableImages] = useState<ImageFile[]>([]);
   const [overviewImages, setOverviewImages] = useState<ImageFile[]>([]);
   const [labelImages, setLabelImages] = useState<ImageFile[]>([]);
-  const [verificationResult, setVerificationResult] = useState<AnalyzeVerificationResultOutput & { matchStatus: VerificationMatchStatus } | null>(null);
+  const [verificationResult, setVerificationResult] = useState<ExtendedVerificationResult | null>(null);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [progressValue, setProgressValue] = useState(0);
   const [copiedLabel, setCopiedLabel] = useState(false);
@@ -51,10 +51,41 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
 
   const { toast } = useToast();
 
-  // Copy function
+  // Copy function with fallback
   const handleCopy = async (text: string, type: 'label' | 'overview') => {
+    if (!text || text.trim() === '') {
+      toast({
+        title: "Nothing to copy",
+        description: "No text available to copy.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(text);
+      // Check if clipboard API is available and we're in a secure context
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) {
+          throw new Error('Fallback copy failed');
+        }
+      }
+      
+      // Update state and show success message
       if (type === 'label') {
         setCopiedLabel(true);
         setTimeout(() => setCopiedLabel(false), 2000);
@@ -62,14 +93,16 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
         setCopiedOverview(true);
         setTimeout(() => setCopiedOverview(false), 2000);
       }
+      
       toast({
         title: "Copied to clipboard",
         description: "AI analysis has been copied to your clipboard.",
       });
     } catch (err) {
+      console.error('Copy failed:', err);
       toast({
         title: "Failed to copy",
-        description: "Please try again.",
+        description: "Unable to copy to clipboard. Please try selecting and copying the text manually.",
         variant: "destructive",
       });
     }
@@ -357,7 +390,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
         matchStatus = 'Uncertain';
       }
       
-      const mappedResult = {
+      const mappedResult: ExtendedVerificationResult = {
         matchStatus,
         confidenceScore: Math.max(
           result.matchLabelToReference_confidence || 0,
@@ -367,11 +400,13 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           result.label_explanation,
           result.overview_explanation
         ].filter(Boolean).join(' '),
+        uploadedOverviewImage: overviewImage?.key || '',
+        uploadedLabelImage: labelImage?.key || '',
+        referenceImages: [], // Backend doesn't return reference images in this format
         labelExplanation: result.label_explanation,
         overviewExplanation: result.overview_explanation,
         labelConfidence: result.matchLabelToReference_confidence || 0,
         overviewConfidence: result.matchOverviewToReference_confidence || 0,
-        referenceImages: [], // Backend doesn't return reference images in this format
         transactionId: result.transactionId,
         timestamp: new Date().toISOString() // Add current timestamp
       };

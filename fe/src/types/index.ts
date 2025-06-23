@@ -31,6 +31,16 @@ export interface VerificationResult {
   referenceImages: string[]; // URLs
 }
 
+// Extended verification result with separate analysis for label and overview
+export interface ExtendedVerificationResult extends VerificationResult {
+  labelExplanation?: string;
+  overviewExplanation?: string;
+  labelConfidence?: number;
+  overviewConfidence?: number;
+  transactionId?: string;
+  timestamp?: string;
+}
+
 // Updated to match actual API response
 export interface TransactionData {
   id: string; // API returns 'id' not 'transactionId'
