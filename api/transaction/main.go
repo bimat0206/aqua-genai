@@ -22,23 +22,24 @@ import (
 
 // Configuration structure
 type Config struct {
-	ResultTable          string
-	DatasetBucket        string
-	ValidationBucket     string
-	Region               string
-	PresignedURLExpiry   time.Duration
-	LogLevel             string
+	ResultTable        string
+	DatasetBucket      string
+	ValidationBucket   string
+	Region             string
+	PresignedURLExpiry time.Duration
+	LogLevel           string
 }
 
 // Core data structures matching existing DynamoDB schema
 type TransactionRecord struct {
-	ID                         string          `json:"id" dynamodbav:"id"`
-	Timestamp                  string          `json:"timestamp" dynamodbav:"timestamp"`
-	ProductID                  string          `json:"productId" dynamodbav:"productId"`
-	ProductCategory            string          `json:"productCategory" dynamodbav:"productCategory"`
-	UploadedLabelImageKey      string          `json:"uploadedLabelImageKey" dynamodbav:"uploadedLabelImageKey"`
-	UploadedOverviewImageKey   string          `json:"uploadedOverviewImageKey" dynamodbav:"uploadedOverviewImageKey"`
-	BedrockResponse           BedrockResponse  `json:"bedrockResponse" dynamodbav:"bedrockResponse"`
+	ID                        string          `json:"id" dynamodbav:"id"`
+	Timestamp                 string          `json:"timestamp" dynamodbav:"timestamp"`
+	ProductID                 string          `json:"productId" dynamodbav:"productId"`
+	ProductCategory           string          `json:"productCategory" dynamodbav:"productCategory"`
+	UploadedLabelImageKey     string          `json:"uploadedLabelImageKey" dynamodbav:"uploadedLabelImageKey"`
+	UploadedOverviewImageKey  string          `json:"uploadedOverviewImageKey" dynamodbav:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey string          `json:"uploadedReferenceImageKey" dynamodbav:"uploadedReferenceImageKey"`
+	BedrockResponse           BedrockResponse `json:"bedrockResponse" dynamodbav:"bedrockResponse"`
 }
 
 // BedrockResponse matches the existing DynamoDB structure exactly
@@ -54,43 +55,44 @@ type BedrockResponse struct {
 }
 
 type TokenUsage struct {
-	OutputTokens            int `json:"output_tokens" dynamodbav:"output_tokens"`
+	OutputTokens             int `json:"output_tokens" dynamodbav:"output_tokens"`
 	CacheCreationInputTokens int `json:"cache_creation_input_tokens" dynamodbav:"cache_creation_input_tokens"`
-	InputTokens             int `json:"input_tokens" dynamodbav:"input_tokens"`
-	CacheReadInputTokens    int `json:"cache_read_input_tokens" dynamodbav:"cache_read_input_tokens"`
+	InputTokens              int `json:"input_tokens" dynamodbav:"input_tokens"`
+	CacheReadInputTokens     int `json:"cache_read_input_tokens" dynamodbav:"cache_read_input_tokens"`
 }
 
 type ContentItem struct {
-	Type string `json:"type" dynamodbav:"type"`
-	Text string `json:"text" dynamodbav:"text"`
+	Type string                 `json:"type" dynamodbav:"type"`
+	Text map[string]interface{} `json:"text" dynamodbav:"text"`
 }
 
 // Parsed verification results from AI response
 type VerificationResults struct {
-	MatchLabelToReference       string  `json:"matchLabelToReference"`
-	MatchLabelConfidence        float64 `json:"matchLabelToReference_confidence"`
-	LabelExplanation           string  `json:"label_explanation"`
-	MatchOverviewToReference    string  `json:"matchOverviewToReference"`
-	MatchOverviewConfidence     float64 `json:"matchOverviewToReference_confidence"`
-	OverviewExplanation        string  `json:"overview_explanation"`
+	MatchLabelToReference    string  `json:"matchLabelToReference" dynamodbav:"matchLabelToReference"`
+	MatchLabelConfidence     float64 `json:"matchLabelToReference_confidence" dynamodbav:"matchLabelToReference_confidence"`
+	LabelExplanation         string  `json:"label_explanation" dynamodbav:"label_explanation"`
+	MatchOverviewToReference string  `json:"matchOverviewToReference" dynamodbav:"matchOverviewToReference"`
+	MatchOverviewConfidence  float64 `json:"matchOverviewToReference_confidence" dynamodbav:"matchOverviewToReference_confidence"`
+	OverviewExplanation      string  `json:"overview_explanation" dynamodbav:"overview_explanation"`
 }
 
 // API Response structures
 type TransactionResponse struct {
-	ID                       string               `json:"id"`
-	Timestamp               time.Time            `json:"timestamp"`
-	ProductID               string               `json:"productId"`
-	ProductCategory         string               `json:"productCategory"`
-	UploadedLabelImageKey   string               `json:"uploadedLabelImageKey"`
-	UploadedOverviewImageKey string              `json:"uploadedOverviewImageKey"`
-	VerificationResult      string               `json:"verificationResult"`
-	OverallConfidence       float64              `json:"overallConfidence"`
-	LabelVerification       VerificationDetail   `json:"labelVerification"`
-	OverviewVerification    VerificationDetail   `json:"overviewVerification"`
-	ImageAccess             ImageAccessData      `json:"imageAccess"`
-	AIAnalysis              AIAnalysisData       `json:"aiAnalysis"`
-	RawResponse             BedrockResponse      `json:"rawResponse"`
-	Metadata                TransactionMetadata  `json:"metadata"`
+	ID                        string              `json:"id"`
+	Timestamp                 time.Time           `json:"timestamp"`
+	ProductID                 string              `json:"productId"`
+	ProductCategory           string              `json:"productCategory"`
+	UploadedLabelImageKey     string              `json:"uploadedLabelImageKey"`
+	UploadedOverviewImageKey  string              `json:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey string              `json:"uploadedReferenceImageKey"`
+	VerificationResult        string              `json:"verificationResult"`
+	OverallConfidence         float64             `json:"overallConfidence"`
+	LabelVerification         VerificationDetail  `json:"labelVerification"`
+	OverviewVerification      VerificationDetail  `json:"overviewVerification"`
+	ImageAccess               ImageAccessData     `json:"imageAccess"`
+	AIAnalysis                AIAnalysisData      `json:"aiAnalysis"`
+	RawResponse               BedrockResponse     `json:"rawResponse"`
+	Metadata                  TransactionMetadata `json:"metadata"`
 }
 
 type VerificationDetail struct {
@@ -100,8 +102,9 @@ type VerificationDetail struct {
 }
 
 type ImageAccessData struct {
-	UploadedLabelImage   *ImageAccess `json:"uploadedLabelImage,omitempty"`
-	UploadedOverviewImage *ImageAccess `json:"uploadedOverviewImage,omitempty"`
+	UploadedLabelImage     *ImageAccess `json:"uploadedLabelImage,omitempty"`
+	UploadedOverviewImage  *ImageAccess `json:"uploadedOverviewImage,omitempty"`
+	UploadedReferenceImage *ImageAccess `json:"uploadedReferenceImage,omitempty"`
 }
 
 type ImageAccess struct {
@@ -111,17 +114,17 @@ type ImageAccess struct {
 }
 
 type AIAnalysisData struct {
-	Model         string    `json:"model"`
-	ModelID       string    `json:"modelId"`
-	StopReason    string    `json:"stopReason"`
+	Model         string     `json:"model"`
+	ModelID       string     `json:"modelId"`
+	StopReason    string     `json:"stopReason"`
 	TokenUsage    TokenUsage `json:"tokenUsage"`
-	EstimatedCost float64   `json:"estimatedCost"`
+	EstimatedCost float64    `json:"estimatedCost"`
 }
 
 type TransactionMetadata struct {
-	RetrievedAt          time.Time `json:"retrievedAt"`
-	PresignedURLExpiry   string    `json:"presignedUrlExpiry"`
-	APIVersion           string    `json:"apiVersion"`
+	RetrievedAt        time.Time `json:"retrievedAt"`
+	PresignedURLExpiry string    `json:"presignedUrlExpiry"`
+	APIVersion         string    `json:"apiVersion"`
 }
 
 type ErrorResponse struct {
@@ -138,6 +141,7 @@ var (
 	s3Client      *s3.Client
 	presignClient *s3.PresignClient
 	appConfig     *Config
+	awsConfig     aws.Config
 )
 
 // Initialize AWS services and configuration
@@ -147,11 +151,11 @@ func init() {
 	// Load configuration from environment variables
 	appConfig = &Config{
 		ResultTable:        os.Getenv("AWS_RESULT_TABLE"),
-		DatasetBucket:     os.Getenv("AWS_DATASET_BUCKET"),
-		ValidationBucket:  os.Getenv("AWS_IMPUT_IMG_VALIDATION_BUCKET"),
-		Region:            os.Getenv("AWS_REGION"),
+		DatasetBucket:      os.Getenv("AWS_DATASET_BUCKET"),
+		ValidationBucket:   os.Getenv("AWS_IMPUT_IMG_VALIDATION_BUCKET"),
+		Region:             os.Getenv("AWS_REGION"),
 		PresignedURLExpiry: 15 * time.Minute, // Default 15 minutes
-		LogLevel:          os.Getenv("LOG_LEVEL"),
+		LogLevel:           os.Getenv("LOG_LEVEL"),
 	}
 
 	if appConfig.ResultTable == "" {
@@ -166,7 +170,7 @@ func init() {
 		log.Fatal("AWS_IMPUT_IMG_VALIDATION_BUCKET environment variable is required")
 	}
 
-	log.Printf("Initializing Transaction API with config: table=%s, datasetBucket=%s, validationBucket=%s, region=%s", 
+	log.Printf("Initializing Transaction API with config: table=%s, datasetBucket=%s, validationBucket=%s, region=%s",
 		appConfig.ResultTable, appConfig.DatasetBucket, appConfig.ValidationBucket, appConfig.Region)
 
 	// Initialize AWS configuration
@@ -175,6 +179,9 @@ func init() {
 	if err != nil {
 		log.Fatalf("Failed to load AWS configuration: %v", err)
 	}
+
+	// Store AWS config globally for manual presigning
+	awsConfig = cfg
 
 	// Initialize AWS clients
 	dynamoClient = dynamodb.NewFromConfig(cfg)
@@ -275,7 +282,7 @@ func getTransactionRecord(ctx context.Context, requestID, transactionID string) 
 		return nil, fmt.Errorf("failed to unmarshal transaction record: %w", err)
 	}
 
-	log.Printf("RequestID: %s - Transaction record unmarshaled: ProductID=%s, Category=%s", 
+	log.Printf("RequestID: %s - Transaction record unmarshaled: ProductID=%s, Category=%s",
 		requestID, record.ProductID, record.ProductCategory)
 
 	return &record, nil
@@ -300,10 +307,10 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 		verificationResults = &VerificationResults{
 			MatchLabelToReference:    "unknown",
 			MatchLabelConfidence:     0.0,
-			LabelExplanation:        "Failed to parse AI response",
+			LabelExplanation:         "Failed to parse AI response",
 			MatchOverviewToReference: "unknown",
 			MatchOverviewConfidence:  0.0,
-			OverviewExplanation:     "Failed to parse AI response",
+			OverviewExplanation:      "Failed to parse AI response",
 		}
 	}
 
@@ -311,8 +318,8 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 	overallConfidence := (verificationResults.MatchLabelConfidence + verificationResults.MatchOverviewConfidence) / 2
 	verificationResult := determineVerificationResult(verificationResults, overallConfidence)
 
-	log.Printf("RequestID: %s - Verification analysis: Result=%s, Confidence=%.3f, Label=%.3f, Overview=%.3f", 
-		requestID, verificationResult, overallConfidence, 
+	log.Printf("RequestID: %s - Verification analysis: Result=%s, Confidence=%.3f, Label=%.3f, Overview=%.3f",
+		requestID, verificationResult, overallConfidence,
 		verificationResults.MatchLabelConfidence, verificationResults.MatchOverviewConfidence)
 
 	// Generate presigned URLs for image access
@@ -327,14 +334,15 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 
 	// Build response
 	response := &TransactionResponse{
-		ID:                       record.ID,
-		Timestamp:               timestamp,
-		ProductID:               record.ProductID,
-		ProductCategory:         record.ProductCategory,
-		UploadedLabelImageKey:   record.UploadedLabelImageKey,
-		UploadedOverviewImageKey: record.UploadedOverviewImageKey,
-		VerificationResult:      verificationResult,
-		OverallConfidence:       overallConfidence,
+		ID:                        record.ID,
+		Timestamp:                 timestamp,
+		ProductID:                 record.ProductID,
+		ProductCategory:           record.ProductCategory,
+		UploadedLabelImageKey:     record.UploadedLabelImageKey,
+		UploadedOverviewImageKey:  record.UploadedOverviewImageKey,
+		UploadedReferenceImageKey: record.UploadedReferenceImageKey,
+		VerificationResult:        verificationResult,
+		OverallConfidence:         overallConfidence,
 		LabelVerification: VerificationDetail{
 			Result:      verificationResults.MatchLabelToReference,
 			Confidence:  verificationResults.MatchLabelConfidence,
@@ -355,9 +363,9 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 		},
 		RawResponse: record.BedrockResponse,
 		Metadata: TransactionMetadata{
-			RetrievedAt:          time.Now(),
-			PresignedURLExpiry:   "15 minutes",
-			APIVersion:           "v1",
+			RetrievedAt:        time.Now(),
+			PresignedURLExpiry: "15 minutes",
+			APIVersion:         "v1",
 		},
 	}
 
@@ -365,34 +373,45 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 	return response, nil
 }
 
-// Parse verification results from Bedrock response content (matching existing system)
+// Parse verification results from Bedrock response content (matching actual DynamoDB structure)
 func parseVerificationResults(requestID string, bedrockResponse BedrockResponse) (*VerificationResults, error) {
 	if len(bedrockResponse.Content) == 0 {
 		return nil, fmt.Errorf("empty content array in bedrock response")
 	}
 
-	contentText := bedrockResponse.Content[0].Text
-	log.Printf("RequestID: %s - Parsing bedrock content text length: %d", requestID, len(contentText))
+	// Extract the text map from the first content item
+	textMap := bedrockResponse.Content[0].Text
+	log.Printf("RequestID: %s - Extracted text map from content: %+v", requestID, textMap)
 
-	// Handle JSON wrapper removal (same as existing Python system)
-	if strings.HasPrefix(contentText, "```json\n") {
-		contentText = strings.TrimPrefix(contentText, "```json\n")
-		contentText = strings.TrimSuffix(contentText, "\n```")
+	results := &VerificationResults{}
+	
+	// Parse string fields from the map
+	if val, ok := textMap["matchLabelToReference"].(string); ok {
+		results.MatchLabelToReference = val
+	}
+	if val, ok := textMap["label_explanation"].(string); ok {
+		results.LabelExplanation = val
+	}
+	if val, ok := textMap["matchOverviewToReference"].(string); ok {
+		results.MatchOverviewToReference = val
+	}
+	if val, ok := textMap["overview_explanation"].(string); ok {
+		results.OverviewExplanation = val
+	}
+	
+	// Parse numeric confidence values - they come as float64 from DynamoDB unmarshaling
+	if val, ok := textMap["matchLabelToReference_confidence"].(float64); ok {
+		results.MatchLabelConfidence = val
+	}
+	if val, ok := textMap["matchOverviewToReference_confidence"].(float64); ok {
+		results.MatchOverviewConfidence = val
 	}
 
-	var results VerificationResults
-	err := json.Unmarshal([]byte(contentText), &results)
-	if err != nil {
-		log.Printf("RequestID: %s - Failed to parse verification JSON: %v", requestID, err)
-		log.Printf("RequestID: %s - Raw content text: %s", requestID, contentText)
-		return nil, fmt.Errorf("failed to parse verification results JSON: %w", err)
-	}
-
-	log.Printf("RequestID: %s - Parsed verification results: label=%s (%.2f), overview=%s (%.2f)", 
-		requestID, results.MatchLabelToReference, results.MatchLabelConfidence, 
+	log.Printf("RequestID: %s - Parsed verification results: label=%s (%.2f), overview=%s (%.2f)",
+		requestID, results.MatchLabelToReference, results.MatchLabelConfidence,
 		results.MatchOverviewToReference, results.MatchOverviewConfidence)
 
-	return &results, nil
+	return results, nil
 }
 
 // Determine verification result based on AI analysis (matching existing system logic)
@@ -431,7 +450,7 @@ func generateImageAccessURLs(ctx context.Context, requestID string, record *Tran
 		}
 	}
 
-	// Generate presigned URL for overview image  
+	// Generate presigned URL for overview image
 	if record.UploadedOverviewImageKey != "" {
 		overviewURL, err := generatePresignedURL(ctx, requestID, record.UploadedOverviewImageKey)
 		if err != nil {
@@ -443,6 +462,26 @@ func generateImageAccessURLs(ctx context.Context, requestID string, record *Tran
 				ExpiresAt:    expiresAt,
 			}
 			log.Printf("RequestID: %s - Generated presigned URL for overview image", requestID)
+		}
+	}
+
+	// Generate presigned URL for reference image (handle comma-separated values)
+	if record.UploadedReferenceImageKey != "" {
+		// Split comma-separated reference image keys and use the first one
+		referenceKeys := strings.Split(record.UploadedReferenceImageKey, ",")
+		if len(referenceKeys) > 0 {
+			firstReferenceKey := strings.TrimSpace(referenceKeys[0])
+			referenceURL, err := generatePresignedURL(ctx, requestID, firstReferenceKey)
+			if err != nil {
+				log.Printf("RequestID: %s - Warning: Failed to generate presigned URL for reference image: %v", requestID, err)
+			} else {
+				imageAccess.UploadedReferenceImage = &ImageAccess{
+					Key:          firstReferenceKey,
+					PresignedURL: referenceURL,
+					ExpiresAt:    expiresAt,
+				}
+				log.Printf("RequestID: %s - Generated presigned URL for reference image (using first of %d images)", requestID, len(referenceKeys))
+			}
 		}
 	}
 
@@ -461,7 +500,11 @@ func generatePresignedURL(ctx context.Context, requestID, key string) (string, e
 		bucket = appConfig.ValidationBucket
 	}
 
-	request, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
+	// Use the standard AWS SDK approach but create a fresh presign client
+	// to ensure clean configuration
+	freshPresignClient := s3.NewPresignClient(s3Client)
+
+	request, err := freshPresignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
 	}, func(opts *s3.PresignOptions) {
@@ -496,7 +539,7 @@ func createErrorResponse(statusCode int, errorCode, message string) (events.APIG
 	body, err := json.Marshal(errorResp)
 	if err != nil {
 		// Fallback to simple error message if JSON marshaling fails
-		body = []byte(fmt.Sprintf(`{"error":{"code":"%s","message":"%s","timestamp":"%s"}}`, 
+		body = []byte(fmt.Sprintf(`{"error":{"code":"%s","message":"%s","timestamp":"%s"}}`,
 			errorCode, message, time.Now().Format(time.RFC3339)))
 	}
 

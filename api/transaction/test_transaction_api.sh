@@ -3,10 +3,10 @@
 
 # Configuration
 
-export API_GATEWAY_ENDPOINT="https://p54uxywt9c.execute-api.ap-southeast-1.amazonaws.com/dev/transaction"
-export API_KEY="5vBzBEoyZv2TgVkFFRsng92wCp4TRWtQ5qZOOPry"
+export API_GATEWAY_ENDPOINT="https://a0sm23hz65.execute-api.ap-southeast-1.amazonaws.com/dev/transaction"
+export API_KEY="obWsYLQ1jUvQ4xPxglh2ZXHNZUrJSb4JZgTDZs20"
 # Test data from existing system
-export TRANSACTION_ID="15d44dda-90d8-41ea-ae04-7c0085766d2a"
+export TRANSACTION_ID="fb6b18e7-40e4-41df-aba7-3a66703ed1ec"
 
 echo "==========================================="
 echo "Testing Aqua Transaction API"

@@ -34,6 +34,7 @@ Based on the actual DynamoDB record structure from the existing system:
   "productCategory": "REF",
   "uploadedLabelImageKey": "dataset/REF/AQR-M466XA(GB)/TEM NL/22ab3ab6-ed75-4999-b3dc-1b7aaf9cb070-image_1731580040127.jpg",
   "uploadedOverviewImageKey": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/20ffd946-63eb-4b55-95a8-790e358c5d00-image_1731580061456.jpg",
+  "uploadedReferenceImageKey": "dataset/REF/AQR-M466XA(GB)/HÌNH WEB/reference-image-12345.jpg",
   "verificationResult": "CORRECT",
   "overallConfidence": 0.935,
   "labelVerification": {
@@ -54,6 +55,11 @@ Based on the actual DynamoDB record structure from the existing system:
     },
     "uploadedOverviewImage": {
       "key": "dataset/REF/AQR-M466XA(GB)/CHÍNH DIỆN/20ffd946-63eb-4b55-95a8-790e358c5d00-image_1731580061456.jpg",
+      "presignedUrl": "https://s3.amazonaws.com/bucket/key?signature=...",
+      "expiresAt": "2025-06-18T09:01:13Z"
+    },
+    "uploadedReferenceImage": {
+      "key": "dataset/REF/AQR-M466XA(GB)/HÌNH WEB/reference-image-12345.jpg",
       "presignedUrl": "https://s3.amazonaws.com/bucket/key?signature=...",
       "expiresAt": "2025-06-18T09:01:13Z"
     }

@@ -188,12 +188,13 @@ test_function() {
 }
 EOF
 
+    # Test the function
     log_info "Invoking function with test payload..."
     aws lambda invoke \
         --function-name $LAMBDA_FUNCTION_NAME \
         --payload file://test_payload.json \
         --region $AWS_REGION \
-        response.json 
+        response.json > /dev/null 2>&1
 
     if [ $? -eq 0 ]; then
         log_success "Function invocation successful"
