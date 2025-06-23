@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/url"  // Added for URL decoding
 	"os"
 	"strings"
 	"time"
@@ -22,12 +23,12 @@ import (
 
 // Configuration structure
 type Config struct {
-	ResultTable        string
-	DatasetBucket      string
-	ValidationBucket   string
-	Region             string
-	PresignedURLExpiry time.Duration
-	LogLevel           string
+	ResultTable          string
+	DatasetBucket        string
+	ValidationBucket     string
+	Region               string
+	PresignedURLExpiry   time.Duration
+	LogLevel             string
 }
 
 // Core data structures matching existing DynamoDB schema
@@ -68,31 +69,31 @@ type ContentItem struct {
 
 // Parsed verification results from AI response
 type VerificationResults struct {
-	MatchLabelToReference    string  `json:"matchLabelToReference" dynamodbav:"matchLabelToReference"`
-	MatchLabelConfidence     float64 `json:"matchLabelToReference_confidence" dynamodbav:"matchLabelToReference_confidence"`
-	LabelExplanation         string  `json:"label_explanation" dynamodbav:"label_explanation"`
-	MatchOverviewToReference string  `json:"matchOverviewToReference" dynamodbav:"matchOverviewToReference"`
-	MatchOverviewConfidence  float64 `json:"matchOverviewToReference_confidence" dynamodbav:"matchOverviewToReference_confidence"`
-	OverviewExplanation      string  `json:"overview_explanation" dynamodbav:"overview_explanation"`
+	MatchLabelToReference       string  `json:"matchLabelToReference" dynamodbav:"matchLabelToReference"`
+	MatchLabelConfidence        float64 `json:"matchLabelToReference_confidence" dynamodbav:"matchLabelToReference_confidence"`
+	LabelExplanation            string  `json:"label_explanation" dynamodbav:"label_explanation"`
+	MatchOverviewToReference    string  `json:"matchOverviewToReference" dynamodbav:"matchOverviewToReference"`
+	MatchOverviewConfidence     float64 `json:"matchOverviewToReference_confidence" dynamodbav:"matchOverviewToReference_confidence"`
+	OverviewExplanation         string  `json:"overview_explanation" dynamodbav:"overview_explanation"`
 }
 
 // API Response structures
 type TransactionResponse struct {
-	ID                        string              `json:"id"`
-	Timestamp                 time.Time           `json:"timestamp"`
-	ProductID                 string              `json:"productId"`
-	ProductCategory           string              `json:"productCategory"`
-	UploadedLabelImageKey     string              `json:"uploadedLabelImageKey"`
-	UploadedOverviewImageKey  string              `json:"uploadedOverviewImageKey"`
-	UploadedReferenceImageKey string              `json:"uploadedReferenceImageKey"`
-	VerificationResult        string              `json:"verificationResult"`
-	OverallConfidence         float64             `json:"overallConfidence"`
-	LabelVerification         VerificationDetail  `json:"labelVerification"`
-	OverviewVerification      VerificationDetail  `json:"overviewVerification"`
-	ImageAccess               ImageAccessData     `json:"imageAccess"`
-	AIAnalysis                AIAnalysisData      `json:"aiAnalysis"`
-	RawResponse               BedrockResponse     `json:"rawResponse"`
-	Metadata                  TransactionMetadata `json:"metadata"`
+	ID                        string               `json:"id"`
+	Timestamp                 time.Time            `json:"timestamp"`
+	ProductID                 string               `json:"productId"`
+	ProductCategory           string               `json:"productCategory"`
+	UploadedLabelImageKey     string               `json:"uploadedLabelImageKey"`
+	UploadedOverviewImageKey  string               `json:"uploadedOverviewImageKey"`
+	UploadedReferenceImageKey string               `json:"uploadedReferenceImageKey"`
+	VerificationResult        string               `json:"verificationResult"`
+	OverallConfidence         float64              `json:"overallConfidence"`
+	LabelVerification         VerificationDetail   `json:"labelVerification"`
+	OverviewVerification      VerificationDetail   `json:"overviewVerification"`
+	ImageAccess               ImageAccessData      `json:"imageAccess"`
+	AIAnalysis                AIAnalysisData       `json:"aiAnalysis"`
+	RawResponse               BedrockResponse      `json:"rawResponse"`
+	Metadata                  TransactionMetadata  `json:"metadata"`
 }
 
 type VerificationDetail struct {
@@ -218,6 +219,7 @@ func handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 			log.Printf("RequestID: %s - Transaction not found: %s", requestID, transactionID)
 			return createErrorResponse(404, "TRANSACTION_NOT_FOUND", fmt.Sprintf("Transaction with ID '%s' was not found", transactionID))
 		}
+
 		log.Printf("RequestID: %s - Failed to retrieve transaction: %v", requestID, err)
 		return createErrorResponse(500, "DATABASE_ERROR", "Failed to retrieve transaction from database")
 	}
@@ -284,7 +286,6 @@ func getTransactionRecord(ctx context.Context, requestID, transactionID string) 
 
 	log.Printf("RequestID: %s - Transaction record unmarshaled: ProductID=%s, Category=%s",
 		requestID, record.ProductID, record.ProductCategory)
-
 	return &record, nil
 }
 
@@ -373,7 +374,7 @@ func buildTransactionResponse(ctx context.Context, requestID string, record *Tra
 	return response, nil
 }
 
-// Parse verification results from Bedrock response content (matching actual DynamoDB structure)
+// Parse verification results from Bedrock response content
 func parseVerificationResults(requestID string, bedrockResponse BedrockResponse) (*VerificationResults, error) {
 	if len(bedrockResponse.Content) == 0 {
 		return nil, fmt.Errorf("empty content array in bedrock response")
@@ -384,25 +385,29 @@ func parseVerificationResults(requestID string, bedrockResponse BedrockResponse)
 	log.Printf("RequestID: %s - Extracted text map from content: %+v", requestID, textMap)
 
 	results := &VerificationResults{}
-	
+
 	// Parse string fields from the map
 	if val, ok := textMap["matchLabelToReference"].(string); ok {
 		results.MatchLabelToReference = val
 	}
+
 	if val, ok := textMap["label_explanation"].(string); ok {
 		results.LabelExplanation = val
 	}
+
 	if val, ok := textMap["matchOverviewToReference"].(string); ok {
 		results.MatchOverviewToReference = val
 	}
+
 	if val, ok := textMap["overview_explanation"].(string); ok {
 		results.OverviewExplanation = val
 	}
-	
+
 	// Parse numeric confidence values - they come as float64 from DynamoDB unmarshaling
 	if val, ok := textMap["matchLabelToReference_confidence"].(float64); ok {
 		results.MatchLabelConfidence = val
 	}
+
 	if val, ok := textMap["matchOverviewToReference_confidence"].(float64); ok {
 		results.MatchOverviewConfidence = val
 	}
@@ -414,7 +419,7 @@ func parseVerificationResults(requestID string, bedrockResponse BedrockResponse)
 	return results, nil
 }
 
-// Determine verification result based on AI analysis (matching existing system logic)
+// Determine verification result based on AI analysis
 func determineVerificationResult(results *VerificationResults, overallConfidence float64) string {
 	labelMatch := results.MatchLabelToReference == "yes"
 	overviewMatch := results.MatchOverviewToReference == "yes"
@@ -428,98 +433,143 @@ func determineVerificationResult(results *VerificationResults, overallConfidence
 	}
 }
 
-// Generate presigned URLs for image access
+// Generate presigned URLs for image access with enhanced error handling and URL decoding
 func generateImageAccessURLs(ctx context.Context, requestID string, record *TransactionRecord) (ImageAccessData, error) {
 	log.Printf("RequestID: %s - Generating presigned URLs for images", requestID)
-
 	imageAccess := ImageAccessData{}
 	expiresAt := time.Now().Add(appConfig.PresignedURLExpiry)
 
-	// Generate presigned URL for label image
-	if record.UploadedLabelImageKey != "" {
-		labelURL, err := generatePresignedURL(ctx, requestID, record.UploadedLabelImageKey)
+	var errors []string
+
+	// Helper function to safely generate URLs with URL decoding
+	generateSafeURL := func(key, imageType string) *ImageAccess {
+		if key == "" {
+			return nil
+		}
+
+		url, processedKey, err := generatePresignedURL(ctx, requestID, key)
 		if err != nil {
-			log.Printf("RequestID: %s - Warning: Failed to generate presigned URL for label image: %v", requestID, err)
-		} else {
-			imageAccess.UploadedLabelImage = &ImageAccess{
-				Key:          record.UploadedLabelImageKey,
-				PresignedURL: labelURL,
-				ExpiresAt:    expiresAt,
-			}
-			log.Printf("RequestID: %s - Generated presigned URL for label image", requestID)
+			errorMsg := fmt.Sprintf("Failed to generate %s URL: %v", imageType, err)
+			errors = append(errors, errorMsg)
+			log.Printf("RequestID: %s - %s", requestID, errorMsg)
+			return nil
+		}
+
+		return &ImageAccess{
+			Key:          processedKey,
+			PresignedURL: url,
+			ExpiresAt:    expiresAt,
 		}
 	}
 
-	// Generate presigned URL for overview image
-	if record.UploadedOverviewImageKey != "" {
-		overviewURL, err := generatePresignedURL(ctx, requestID, record.UploadedOverviewImageKey)
-		if err != nil {
-			log.Printf("RequestID: %s - Warning: Failed to generate presigned URL for overview image: %v", requestID, err)
-		} else {
-			imageAccess.UploadedOverviewImage = &ImageAccess{
-				Key:          record.UploadedOverviewImageKey,
-				PresignedURL: overviewURL,
-				ExpiresAt:    expiresAt,
-			}
-			log.Printf("RequestID: %s - Generated presigned URL for overview image", requestID)
-		}
-	}
+	// Generate URLs for each image type
+	imageAccess.UploadedLabelImage = generateSafeURL(record.UploadedLabelImageKey, "label image")
+	imageAccess.UploadedOverviewImage = generateSafeURL(record.UploadedOverviewImageKey, "overview image")
 
-	// Generate presigned URL for reference image (handle comma-separated values)
+	// Handle reference image (first valid key from comma-separated list)
 	if record.UploadedReferenceImageKey != "" {
-		// Split comma-separated reference image keys and use the first one
 		referenceKeys := strings.Split(record.UploadedReferenceImageKey, ",")
-		if len(referenceKeys) > 0 {
-			firstReferenceKey := strings.TrimSpace(referenceKeys[0])
-			referenceURL, err := generatePresignedURL(ctx, requestID, firstReferenceKey)
-			if err != nil {
-				log.Printf("RequestID: %s - Warning: Failed to generate presigned URL for reference image: %v", requestID, err)
-			} else {
-				imageAccess.UploadedReferenceImage = &ImageAccess{
-					Key:          firstReferenceKey,
-					PresignedURL: referenceURL,
-					ExpiresAt:    expiresAt,
+		for _, key := range referenceKeys {
+			if trimmedKey := strings.TrimSpace(key); trimmedKey != "" {
+				if refAccess := generateSafeURL(trimmedKey, "reference image"); refAccess != nil {
+					imageAccess.UploadedReferenceImage = refAccess
+					break
 				}
-				log.Printf("RequestID: %s - Generated presigned URL for reference image (using first of %d images)", requestID, len(referenceKeys))
 			}
 		}
+	}
+
+	// Return partial success if some URLs were generated
+	if len(errors) > 0 {
+		log.Printf("RequestID: %s - Some presigned URLs failed: %v", requestID, errors)
+		return imageAccess, fmt.Errorf("partial failure generating presigned URLs: %s", strings.Join(errors, "; "))
 	}
 
 	return imageAccess, nil
 }
 
-// Generate presigned URL for S3 object
-func generatePresignedURL(ctx context.Context, requestID, key string) (string, error) {
-	log.Printf("RequestID: %s - Generating presigned URL for key: %s", requestID, key)
+// Normalize S3 key to handle URL-encoded characters and special characters
+func normalizeS3Key(key string) (string, error) {
+	log.Printf("Normalizing S3 key: original='%s'", key)
+	
+	// URL decode the key to handle encoded characters like %28, %29, %C3%8CNH
+	decodedKey, err := url.QueryUnescape(key)
+	if err != nil {
+		log.Printf("Warning: Failed to URL decode key '%s': %v, using original", key, err)
+		decodedKey = key
+	}
 
-	// Determine bucket based on key prefix (matching existing system logic)
+	// Clean the key - remove leading slashes and normalize whitespace
+	normalizedKey := strings.TrimPrefix(decodedKey, "/")
+	normalizedKey = strings.TrimSpace(normalizedKey)
+
+	if normalizedKey == "" {
+		return "", fmt.Errorf("empty key after normalization")
+	}
+
+	log.Printf("Normalized S3 key: original='%s', decoded='%s', normalized='%s'", key, decodedKey, normalizedKey)
+	return normalizedKey, nil
+}
+
+// Check if S3 object exists before generating presigned URL
+func checkS3ObjectExists(ctx context.Context, bucket, key string) error {
+	_, err := s3Client.HeadObject(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+	return err
+}
+
+// Generate presigned URL for S3 object with proper URL decoding and error handling
+func generatePresignedURL(ctx context.Context, requestID, key string) (string, string, error) {
+	log.Printf("RequestID: %s - Generating presigned URL for key: '%s'", requestID, key)
+
+	// Normalize the key to handle URL-encoded characters
+	normalizedKey, err := normalizeS3Key(key)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to normalize S3 key: %w", err)
+	}
+
+	// Determine bucket based on key prefix
 	var bucket string
-	if strings.HasPrefix(key, "dataset/") {
+	if strings.HasPrefix(normalizedKey, "dataset/") {
 		bucket = appConfig.DatasetBucket
 	} else {
 		bucket = appConfig.ValidationBucket
 	}
 
-	// Use the standard AWS SDK approach but create a fresh presign client
-	// to ensure clean configuration
-	freshPresignClient := s3.NewPresignClient(s3Client)
+	log.Printf("RequestID: %s - Using bucket: %s for key: %s", requestID, bucket, normalizedKey)
 
+	// Validate bucket configuration
+	if bucket == "" {
+		return "", "", fmt.Errorf("bucket not configured for key prefix")
+	}
+
+	// Check if object exists before generating presigned URL
+	if err := checkS3ObjectExists(ctx, bucket, normalizedKey); err != nil {
+		log.Printf("RequestID: %s - S3 object check failed: bucket=%s, key=%s, error=%v", 
+			requestID, bucket, normalizedKey, err)
+		return "", "", fmt.Errorf("S3 object not accessible: %w", err)
+	}
+
+	// Generate presigned URL using fresh presign client
+	freshPresignClient := s3.NewPresignClient(s3Client)
 	request, err := freshPresignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
+		Key:    aws.String(normalizedKey),
 	}, func(opts *s3.PresignOptions) {
 		opts.Expires = appConfig.PresignedURLExpiry
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("failed to generate presigned URL: %w", err)
+		return "", "", fmt.Errorf("failed to generate presigned URL for bucket %s, key %s: %w", bucket, normalizedKey, err)
 	}
 
-	log.Printf("RequestID: %s - Presigned URL generated successfully for bucket: %s", requestID, bucket)
-	return request.URL, nil
+	log.Printf("RequestID: %s - Presigned URL generated successfully", requestID)
+	return request.URL, normalizedKey, nil
 }
 
-// Calculate estimated cost based on token usage (basic estimation)
+// Calculate estimated cost based on token usage
 func calculateEstimatedCost(usage TokenUsage) float64 {
 	// Example rates for Claude (adjust based on actual pricing)
 	inputTokenCost := 0.000003  // $0.000003 per input token
