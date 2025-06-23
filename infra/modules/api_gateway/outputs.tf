@@ -5,7 +5,12 @@ output "api_id" {
 
 output "api_endpoint" {
   description = "The endpoint URL of the API Gateway"
-  value       = "${aws_api_gateway_deployment.this.invoke_url}${aws_api_gateway_stage.this.stage_name}/validate"
+  value       = "https://${aws_api_gateway_rest_api.this.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${aws_api_gateway_stage.this.stage_name}/validate"
+}
+
+output "api_base_url" {
+  description = "The base URL of the API Gateway without specific endpoint"
+  value       = "https://${aws_api_gateway_rest_api.this.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${aws_api_gateway_stage.this.stage_name}"
 }
 
 output "api_key" {

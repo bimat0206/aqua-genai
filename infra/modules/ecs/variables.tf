@@ -279,3 +279,12 @@ variable "secrets_manager_arns" {
   type        = list(string)
   default     = []
 }
+
+variable "secrets" {
+  description = "List of secrets to be passed to the container from AWS Secrets Manager"
+  type = list(object({
+    name      = string
+    valueFrom = string
+  }))
+  default = []
+}

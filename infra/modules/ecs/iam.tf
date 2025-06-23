@@ -34,6 +34,37 @@ resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+# Secrets Manager policy for task execution role (needed for secrets in container definition)
+resource "aws_iam_policy" "task_execution_secrets_manager_policy" {
+  count = var.enable_secrets_manager_access && var.task_execution_role_arn == "" ? 1 : 0
+
+  name        = "${var.project_name}-task-execution-secrets-manager-policy-${var.environment}-${var.name_suffix}"
+  description = "Policy for ECS task execution role to access Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Effect   = "Allow"
+        Resource = length(var.secrets_manager_arns) > 0 ? var.secrets_manager_arns : ["*"]
+      }
+    ]
+  })
+
+  tags = var.common_tags
+}
+
+resource "aws_iam_role_policy_attachment" "task_execution_secrets_manager_attachment" {
+  count = var.enable_secrets_manager_access && var.task_execution_role_arn == "" ? 1 : 0
+
+  role       = aws_iam_role.task_execution_role[0].name
+  policy_arn = aws_iam_policy.task_execution_secrets_manager_policy[0].arn
+}
+
 # ECS Task Role (if not provided)
 resource "aws_iam_role" "task_role" {
   count = var.task_role_arn == "" ? 1 : 0

@@ -1,6 +1,6 @@
 # Terraform Variables Backup
 
-**Date:** 2025-06-18 10:36:37
+**Date:** 2025-06-23 22:05:19
 **Directory:** .
 **File:** terraform.tfvars
 
@@ -14,8 +14,8 @@ stage        = "dev"
 aws_region = "ap-southeast-1"
 
 # Bedrock Model Configuration
-model_region      = "ap-southeast-1"
-model_id          = "apac.anthropic.claude-sonnet-4-20250514-v1:0"
+model_region      = "us-east-1"
+model_id          = "us.anthropic.claude-sonnet-4-20250514-v1:0"
 model_max_tokens  = 12000
 model_temperature = 0.7
 
@@ -35,7 +35,7 @@ api_quota_limit = 1000
 api_quota_period = "MONTH"
 
 # Lambda Container Image
-lambda_image_uri = "879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/binh-spring-app:latest"
+lambda_image_uri = "879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/tamle-ecs:latest"
 
 # Common Tags
 common_tags = {
@@ -43,6 +43,7 @@ common_tags = {
   Environment = "dev"
 }
 
-vpc_cidr = "10.0.0.0/16"
+vpc_cidr = "10.9.0.0/22"
 availability_zones = ["ap-southeast-1a", "ap-southeast-1b"]
-api_key = "your-api-key-here"  # Replace with your actual API key ```
+
+```

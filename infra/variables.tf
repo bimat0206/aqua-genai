@@ -141,8 +141,14 @@ variable "availability_zones" {
   default     = ["ap-southeast-1a", "ap-southeast-1b"]
 }
 
-variable "api_key" {
-  description = "API key to be stored in Secrets Manager"
-  type        = string
-  sensitive   = true
+
+
+
+
+
+
+variable "ecs_environment_variables" {
+  description = "Additional environment variables for ECS."
+  type        = map(string)
+  default     = {}
 }

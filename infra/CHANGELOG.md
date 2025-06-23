@@ -5,6 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2025-06-22] 1.2.0 - Health Check Lambda and API Gateway Updates
+
+### Added
+- **Health Check Lambda Function**: New dedicated health check endpoint for system monitoring
+  - Lightweight Go-based Lambda function (128MB memory, 10s timeout)
+  - Public endpoint at `/health` (no API key required)
+  - Returns JSON response with service status, timestamp, version, region, and environment info
+  - CORS enabled for web application integration
+  - Comprehensive deployment script with ECR integration
+- **API Gateway Health Endpoint**: Added `/health` resource with GET method and OPTIONS for CORS
+- **ECR Repository**: Added health_check container repository for Lambda deployment
+- **Terraform Integration**: Complete infrastructure-as-code support for health check function
+- **Testing Scripts**: Automated testing scripts for health check endpoint validation
+
+### Changed
+- **API Gateway URL**: Updated to use new endpoint `https://a0sm23hz65.execute-api.ap-southeast-1.amazonaws.com/dev`
+- **Frontend Configuration**: Updated React app to use correct API Gateway URL
+- **Environment Variables**: Updated `.env.local.example` and created `.env.local` with new API endpoint
+
+### Enhanced
+- **Monitoring**: Improved system health monitoring capabilities
+- **Documentation**: Updated README files with new API Gateway information
+- **Testing**: Added comprehensive test scripts for health check validation
+
+## [2025-01-XX] 1.1.0 - Enhanced Secrets Management and ECS Integration
+
+### Added
+- **ECS Secrets Manager Integration**: Added comprehensive AWS Secrets Manager support for ECS containers
+  - Environment variables `API_KEY_SECRET_NAME` and `CONFIG_SECRET` now available in ECS containers
+  - Direct secret injection from AWS Secrets Manager into ECS containers using `secrets` field
+  - Structured configuration secret containing API endpoints, S3 bucket names, DynamoDB tables, and AWS region
+- **Enhanced Secrets Manager Module**: Completely restructured for consistency and flexibility
+  - Standardized naming convention with `project_name`, `environment`, `name_suffix`, and `secret_base_name`
+  - Intelligent JSON detection and handling for secret values
+  - Automatic wrapping of simple strings in JSON format with `api_key` field
+- **Improved ECS IAM Permissions**: Enhanced IAM roles for secure secret access
+  - Task execution role permissions for secret retrieval during container startup
+  - Task role permissions for runtime secret access
+  - Dedicated IAM policies for Secrets Manager access
+
+### Changed
+- **BREAKING**: Updated Secrets Manager module variable structure
+  - Replaced `secret_name` with structured naming approach
+  - Updated all secret module calls to use new variable structure
+- **ECS Container Configuration**: Enhanced container definitions to support AWS Secrets Manager
+  - Added `secrets` field to container definitions
+  - Updated IAM dependencies to include Secrets Manager policy attachments
+- **Secret Value Format**: Improved secret value handling
+  - JSON objects used as-is
+  - Simple strings automatically wrapped in `{"api_key": "value"}` format
+
+### Enhanced
+- **Security**: Improved security posture with encrypted secret injection
+- **Consistency**: Standardized naming conventions across all infrastructure components
+- **Flexibility**: Enhanced configuration management through structured JSON secrets
+- **Documentation**: Updated module changelogs with comprehensive migration guides
+
+### Migration Notes
+- Existing secret references will need to be updated to use new variable structure
+- ECS containers will now receive secrets through both environment variables and AWS Secrets Manager
+- IAM permissions automatically updated to support new secret access patterns
+
 ## [2025-06-18] 1.0.1 - Initial Release
 
 

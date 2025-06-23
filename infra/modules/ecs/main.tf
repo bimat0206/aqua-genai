@@ -123,6 +123,8 @@ resource "aws_ecs_task_definition" "this" {
         }
       ]
 
+      secrets = var.secrets
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -182,6 +184,7 @@ resource "aws_ecs_service" "this" {
   depends_on = [
     aws_lb_listener.http,
     aws_iam_role_policy_attachment.task_execution_role_policy,
+    aws_iam_role_policy_attachment.task_execution_secrets_manager_attachment,
     aws_iam_role_policy_attachment.cloudwatch_logs_attachment
   ]
 }

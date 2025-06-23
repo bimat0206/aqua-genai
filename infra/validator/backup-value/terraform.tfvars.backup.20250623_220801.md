@@ -1,6 +1,6 @@
 # Terraform Variables Backup
 
-**Date:** 2025-06-22 10:47:27
+**Date:** 2025-06-23 22:08:01
 **Directory:** .
 **File:** terraform.tfvars
 
@@ -45,5 +45,5 @@ common_tags = {
 
 vpc_cidr = "10.9.0.0/22"
 availability_zones = ["ap-southeast-1a", "ap-southeast-1b"]
-api_key = "your-api-key-here"  # Replace with your actual API key
+
 ```

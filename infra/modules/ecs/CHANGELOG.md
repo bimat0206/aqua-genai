@@ -2,6 +2,47 @@
 
 All notable changes to the ECS module will be documented in this file.
 
+## [2.1.0] - 2025-01-XX
+
+### Added
+- **AWS Secrets Manager Integration**: Added support for injecting secrets from AWS Secrets Manager into ECS containers
+- **Secrets Variable**: Added `secrets` variable to support AWS Secrets Manager secrets in container definitions
+- **Enhanced IAM Permissions**: Added Secrets Manager permissions for both task execution and task roles
+- **Task Execution Role Secrets Access**: Added dedicated IAM policy for task execution role to access Secrets Manager during container startup
+
+### Changed
+- **Container Definition**: Updated container definition to support `secrets` field for AWS Secrets Manager integration
+- **IAM Dependencies**: Updated ECS service dependencies to include new Secrets Manager IAM policy attachments
+
+### Enhanced
+- **Security**: Improved security by enabling secure secret injection from AWS Secrets Manager
+- **Runtime Configuration**: Enhanced runtime configuration capabilities through encrypted secrets
+
+### Usage
+```hcl
+module "ecs" {
+  source = "./modules/ecs"
+  
+  # Enable Secrets Manager access
+  enable_secrets_manager_access = true
+  secrets_manager_arns = [
+    "arn:aws:secretsmanager:region:account:secret:my-secret"
+  ]
+  
+  # Define secrets to inject into container
+  secrets = [
+    {
+      name      = "API_KEY"
+      valueFrom = "arn:aws:secretsmanager:region:account:secret:api-key"
+    },
+    {
+      name      = "CONFIG"
+      valueFrom = "arn:aws:secretsmanager:region:account:secret:config"
+    }
+  ]
+}
+```
+
 ## [2.0.0] - 2024-01-XX
 
 ### Added

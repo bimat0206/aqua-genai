@@ -63,3 +63,12 @@ output "react_frontend_url" {
   description = "The URL of the React frontend application"
   value       = module.ecs_react_frontend.application_url
 }
+output "health_check_endpoint" {
+  description = "The health check endpoint URL"
+  value       = "${module.api_gateway.api_endpoint}/health"
+}
+
+output "health_check_lambda_arn" {
+  description = "The ARN of the health check Lambda function"
+  value       = module.lambda["health_check"].function_arn
+}

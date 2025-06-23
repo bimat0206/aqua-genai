@@ -99,19 +99,45 @@ module "api_gateway" {
   common_tags = local.common_tags
 }
 
+# API Key Secret
 module "api_key_secret" {
   source = "./modules/secretsmanager"
-
-  secret_name        = "${local.project_name}-api-key"
-  secret_description = "API Key for ${local.project_name}"
-  secret_value       = jsonencode({
-    api_key = module.api_gateway.api_key
-    api_id  = module.api_gateway.api_id
-    stage   = var.stage
-  })
-  enable_rotation    = false
-  rotation_days      = 30
+  
+  project_name       = var.project_name
+  environment        = var.environment
+  name_suffix        = local.name_suffix
+  secret_base_name   = "api-key"
+  secret_description = "API key for Aqua GenAI API Gateway"
+  secret_value       = module.api_gateway.api_key
   common_tags        = local.common_tags
+  
+  depends_on = [
+    module.api_gateway
+  ]
+}
+
+# ECS Config Secret
+module "ecs_config_secret" {
+  source = "./modules/secretsmanager"
+  
+  project_name       = var.project_name
+  environment        = var.environment
+  name_suffix        = local.name_suffix
+  secret_base_name   = "ecs-config"
+  secret_description = "Configuration settings for ECS React application"
+  secret_value = jsonencode({
+    API_ENDPOINT     = module.api_gateway.api_base_url
+    S3_BUCKET_NAME   = module.s3_bucket.bucket_name
+    DYNAMODB_TABLE   = module.dynamodb_table.table_name
+    REGION           = data.aws_region.current.name
+  })
+  common_tags = local.common_tags
+  
+  depends_on = [
+    module.api_gateway,
+    module.s3_bucket,
+    module.dynamodb_table
+  ]
 }
 
 # ECS React Frontend
@@ -132,13 +158,21 @@ module "ecs_react_frontend" {
   memory          = local.ecs_config.memory
   health_check_path = local.ecs_config.health_check_path
   
-  environment_variables = {
-    API_ENDPOINT = module.api_gateway.api_endpoint
-  }
+  environment_variables = merge(
+    {
+      API_KEY_SECRET_NAME = module.api_key_secret.secret_name
+      CONFIG_SECRET_NAME  = module.ecs_config_secret.secret_name
+    },
+    var.ecs_environment_variables
+  )
   
   assign_public_ip    = true
   enable_load_balancer = true
   ecr_repository_arn  = module.ecr_repositories["react_frontend"].repository_arn
-  
+    enable_secrets_manager_access = true
+  secrets_manager_arns = [
+    module.api_key_secret.secret_arn,
+    module.ecs_config_secret.secret_arn
+  ]
   common_tags = local.common_tags
 }

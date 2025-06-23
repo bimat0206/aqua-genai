@@ -65,6 +65,18 @@ locals {
         EXPORT_BUCKET    = local.s3_bucket_name
       }
     }
+        health_check = {
+      name        = "${var.project_name}-health-check-function-${local.name_suffix}"
+      description = "API health check endpoint"
+      memory_size = 128
+      timeout     = 10
+      environment = {
+        LOG_LEVEL      = var.function_log_level
+        AWS_DATASET_BUCKET              = "aqua-genai-dataset-879654127886-ap-southeast-1"
+        AWS_IMPUT_IMG_VALIDATION_BUCKET = "aqua-genai-dataset-879654127886-ap-southeast-1"
+        AWS_RESULT_TABLE = module.dynamodb_table.table_name
+      }
+    }
   }
 
   # ECR repositories
@@ -81,6 +93,9 @@ locals {
     history = {
       name = "${var.project_name}-history-container-${local.name_suffix}"
     }
+        health_check = {
+      name = "${var.project_name}-health-check-container-${local.name_suffix}"
+    }
     react_frontend = {
       name = "${var.project_name}-react-frontend-${local.name_suffix}"
     }
@@ -93,11 +108,11 @@ locals {
   ecs_config = {
     name = "${var.project_name}-react-frontend"
     container_name = "react-frontend"
-    container_port = 80
+    container_port = 3000
     desired_count = 1
     cpu = 256
     memory = 512
-    health_check_path = "/"
+    health_check_path = "/api/health"
   }
 
   # Common tags
