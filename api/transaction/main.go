@@ -139,11 +139,9 @@ type ErrorResponse struct {
 
 // Global variables
 var (
-	dynamoClient  *dynamodb.Client
-	s3Client      *s3.Client
-	presignClient *s3.PresignClient
-	appConfig     *Config
-	awsConfig     aws.Config
+	dynamoClient *dynamodb.Client
+	s3Client     *s3.Client
+	appConfig    *Config
 )
 
 // removeAmzSDKRequest strips the SDK's default amz-sdk-request middleware so
@@ -193,19 +191,9 @@ func init() {
 		log.Fatalf("Failed to load AWS configuration: %v", err)
 	}
 
-	// Store AWS config globally for manual presigning
-	awsConfig = cfg
-
 	// Initialize AWS clients
 	dynamoClient = dynamodb.NewFromConfig(cfg)
 	s3Client = s3.NewFromConfig(cfg)
-	presignClient = s3.NewPresignClient(s3Client,
-		func(po *s3.PresignOptions) {
-			po.ClientOptions = append(po.ClientOptions,
-				func(o *s3.Options) {
-					o.APIOptions = append(o.APIOptions, removeAmzSDKRequest)
-				})
-		})
 
 	log.Println("AWS DynamoDB and S3 clients initialized successfully")
 }
@@ -570,7 +558,15 @@ func generatePresignedURL(ctx context.Context, requestID, key string) (string, s
 		return "", "", fmt.Errorf("S3 object not accessible: %w", err)
 	}
 
-	// Generate presigned URL using the global presign client
+	// Generate presigned URL using a fresh presign client
+	presignClient := s3.NewPresignClient(s3Client,
+		func(po *s3.PresignOptions) {
+			po.ClientOptions = append(po.ClientOptions,
+				func(o *s3.Options) {
+					o.APIOptions = append(o.APIOptions, removeAmzSDKRequest)
+				})
+		})
+
 	request, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(normalizedKey),
