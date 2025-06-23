@@ -1,0 +1,9 @@
+{
+  "matchLabelToReference": "yes",
+  "matchLabelToReference_confidence": 0.95,
+  "label_explanation": "Exact product code match: AQD-DW1000J found on uploaded label matches the target Product ID AQD-DW1000J.BK. All key specifications match perfectly - power rating: 1750W, capacity: 10.0 kg, energy efficiency: 15.2 Wh/kg, Vietnamese standard TCVN 8526:2013. The green energy label design, 5-star rating display, AQUA VIET NAM branding, and VNEEP certification logo are identical to reference labels. Layout, typography, and color scheme are consistent.",
+  "matchOverviewToReference": "yes",
+  "matchOverviewToReference_confidence": 0.92,
+  "overview_explanation": "The uploaded overview image shows a front-loading washing machine that matches all key physical features of the AQD-DW1000J.BK reference model. Confirmed matching features include: black exterior finish, front-loading design with large circular door opening, digital control panel positioned at the top with LED display showing '00:00', row of program selection buttons/icons, AQUA branding on upper left, chrome door handle and rim, distinctive side panel ventilation pattern with curved lines, and overall proportions and design aesthetic. The machine appears to be wrapped in protective plastic which is consistent with retail display practices, but all identifying features are clearly visible and match the reference images exactly.",
+  "transactionId": "5af9c89d-c077-4e88-ad80-adc982f5a414"
+}

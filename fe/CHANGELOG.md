@@ -5,6 +5,27 @@ All notable changes to the Aqua GenAI Frontend will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-06-23
+
+### Fixed
+- **Copy Button Functionality**: Fixed clipboard copy functionality across all pages
+  - Added fallback method using `document.execCommand` for non-secure contexts and older browsers
+  - Enhanced error handling for clipboard API failures
+  - Fixed copy buttons in new verification page, history page, and details modal
+  - Maintains visual feedback (check icon) on successful copy
+
+- **Deploy Script Errors**: Fixed undefined functions and variables in deployment script
+  - Replaced undefined `log_info` and `log_error` functions with echo statements
+  - Fixed undefined `$REGION` variable to use `$AWS_REGION`
+  - Enhanced error output formatting with emoji indicators
+
+### Changed
+- **Step 5 Verification Result UI**: Updated status display to use API response directly
+  - Status badges now show actual API-returned status (Correct/Incorrect/Uncertain) instead of calculating from confidence scores
+  - Confidence scores displayed to the left of status badges in muted text
+  - Added separate status tracking for label and overview verifications
+  - Enhanced `ExtendedVerificationResult` interface with `labelMatchStatus` and `overviewMatchStatus` fields
+
 ## [1.1] - 2025-06-23
 
 ### Added

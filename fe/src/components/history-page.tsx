@@ -78,7 +78,28 @@ const HistoryPage: React.FC = () => {
   // Copy transaction ID function
   const handleCopyTransactionId = async (transactionId: string) => {
     try {
-      await navigator.clipboard.writeText(transactionId);
+      // Check if clipboard API is available and we're in a secure context
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(transactionId);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = transactionId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) {
+          throw new Error('Fallback copy failed');
+        }
+      }
+      
       setCopiedTransactionId(transactionId);
       setTimeout(() => setCopiedTransactionId(null), 2000);
       toast({
@@ -86,6 +107,7 @@ const HistoryPage: React.FC = () => {
         description: "Transaction ID has been copied to your clipboard.",
       });
     } catch (err) {
+      console.error('Copy failed:', err);
       toast({
         title: "Failed to copy",
         description: "Please try again.",

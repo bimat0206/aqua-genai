@@ -129,8 +129,31 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
 
   if (!item) return null;
 
-  const handleCopy = (text: string, type: 'overview' | 'label') => {
-    navigator.clipboard.writeText(text).then(() => {
+  const handleCopy = async (text: string, type: 'overview' | 'label') => {
+    try {
+      // Check if clipboard API is available and we're in a secure context
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) {
+          throw new Error('Fallback copy failed');
+        }
+      }
+      
+      // Update state on success
       if (type === 'overview') {
         setOverviewCopied(true);
         setTimeout(() => setOverviewCopied(false), 2000);
@@ -138,7 +161,10 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
         setLabelCopied(true);
         setTimeout(() => setLabelCopied(false), 2000);
       }
-    });
+    } catch (err) {
+      console.error('Copy failed:', err);
+      // Could add toast notification here if needed
+    }
   };
 
   const statusConfig: Record<VerificationMatchStatus, { badgeClass: string, name: string }> = {

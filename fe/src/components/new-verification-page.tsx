@@ -111,11 +111,33 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
   // Copy transaction ID function (no notification)
   const handleCopyTransactionId = async (transactionId: string) => {
     try {
-      await navigator.clipboard.writeText(transactionId);
+      // Check if clipboard API is available and we're in a secure context
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(transactionId);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = transactionId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (!successful) {
+          throw new Error('Fallback copy failed');
+        }
+      }
+      
       setCopiedTransactionId(true);
       setTimeout(() => setCopiedTransactionId(false), 2000);
     } catch (err) {
       // Silent fail - no notification as requested
+      console.error('Copy transaction ID failed:', err);
     }
   };
 
@@ -382,6 +404,17 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
       const labelMatch = result.matchLabelToReference?.toLowerCase();
       const overviewMatch = result.matchOverviewToReference?.toLowerCase();
       
+      // Map individual match results to status
+      const mapMatchToStatus = (match: string): VerificationMatchStatus => {
+        if (match === 'yes') return 'Correct';
+        if (match === 'no') return 'Incorrect';
+        return 'Uncertain';
+      };
+      
+      const labelMatchStatus = mapMatchToStatus(labelMatch);
+      const overviewMatchStatus = mapMatchToStatus(overviewMatch);
+      
+      // Overall status logic
       if (labelMatch === 'yes' && overviewMatch === 'yes') {
         matchStatus = 'Correct';
       } else if (labelMatch === 'no' || overviewMatch === 'no') {
@@ -407,6 +440,8 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
         overviewExplanation: result.overview_explanation,
         labelConfidence: result.matchLabelToReference_confidence || 0,
         overviewConfidence: result.matchOverviewToReference_confidence || 0,
+        labelMatchStatus,
+        overviewMatchStatus,
         transactionId: result.transactionId,
         timestamp: new Date().toISOString() // Add current timestamp
       };
@@ -781,7 +816,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           );
         }
         if (verificationResult) {
-          const { matchStatus, confidenceScore, explanation, labelExplanation, overviewExplanation, labelConfidence, overviewConfidence, referenceImages, transactionId, timestamp } = verificationResult;
+          const { matchStatus, confidenceScore, explanation, labelExplanation, overviewExplanation, labelConfidence, overviewConfidence, labelMatchStatus, overviewMatchStatus, referenceImages, transactionId, timestamp } = verificationResult;
           let statusColorClass = '';
           let StatusIcon = HelpCircle;
           let resultText = matchStatus;
@@ -793,7 +828,22 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
 
           return (
             <div className="w-full max-w-7xl mx-auto">
-                <h2 className="text-xl font-bold mb-6">Step 5: Verification Result</h2>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold">Step 5: Verification Result</h2>
+                    <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium text-muted-foreground">
+                            Confidence: {Math.round((confidenceScore || 0) * 100)}%
+                        </span>
+                        <span className={cn(
+                            "px-3 py-1.5 text-sm font-semibold rounded-full",
+                            matchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct border border-status-correct/20' :
+                            matchStatus === 'Incorrect' ? 'bg-status-incorrect/10 text-status-incorrect border border-status-incorrect/20' :
+                            'bg-status-uncertain/10 text-status-uncertain border border-status-uncertain/20'
+                        )}>
+                            {resultText}
+                        </span>
+                    </div>
+                </div>
                 
                 {/* Product Info - Now at the top */}
                 <div className="bg-card p-6 rounded-xl border border-border mb-6">
@@ -850,14 +900,22 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
                                     <FileText size={20}/>
                                     Label Analysis
                                 </h4>
-                                <span className={cn(
-                                    "px-2 py-1 text-xs font-semibold rounded-full",
-                                    labelConfidence && labelConfidence >= 0.8 ? 'bg-status-correct/10 text-status-correct' : 
-                                    labelConfidence && labelConfidence >= 0.5 ? 'bg-status-uncertain/10 text-status-uncertain' :
-                                    'bg-status-incorrect/10 text-status-incorrect'
-                                )}>
-                                    {labelExplanation ? `Confidence: ${Math.round((labelConfidence || 0) * 100)}%` : 'No Analysis'}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    {labelExplanation && (
+                                        <span className="text-xs font-medium text-muted-foreground">
+                                            {Math.round((labelConfidence || 0) * 100)}%
+                                        </span>
+                                    )}
+                                    <span className={cn(
+                                        "px-2 py-1 text-xs font-semibold rounded-full",
+                                        !labelExplanation ? 'bg-muted/50 text-muted-foreground' :
+                                        labelMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct' : 
+                                        labelMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain' :
+                                        'bg-status-incorrect/10 text-status-incorrect'
+                                    )}>
+                                        {!labelExplanation ? 'No Analysis' : labelMatchStatus}
+                                    </span>
+                                </div>
                             </div>
                             
                             <div className="bg-muted/10 p-4 rounded-lg border border-border group relative">
@@ -914,14 +972,22 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
                                     <Camera size={20}/>
                                     Overview Analysis
                                 </h4>
-                                <span className={cn(
-                                    "px-2 py-1 text-xs font-semibold rounded-full",
-                                    overviewConfidence && overviewConfidence >= 0.8 ? 'bg-status-correct/10 text-status-correct' : 
-                                    overviewConfidence && overviewConfidence >= 0.5 ? 'bg-status-uncertain/10 text-status-uncertain' :
-                                    'bg-status-incorrect/10 text-status-incorrect'
-                                )}>
-                                    {overviewExplanation ? `Confidence: ${Math.round((overviewConfidence || 0) * 100)}%` : 'No Analysis'}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    {overviewExplanation && (
+                                        <span className="text-xs font-medium text-muted-foreground">
+                                            {Math.round((overviewConfidence || 0) * 100)}%
+                                        </span>
+                                    )}
+                                    <span className={cn(
+                                        "px-2 py-1 text-xs font-semibold rounded-full",
+                                        !overviewExplanation ? 'bg-muted/50 text-muted-foreground' :
+                                        overviewMatchStatus === 'Correct' ? 'bg-status-correct/10 text-status-correct' : 
+                                        overviewMatchStatus === 'Uncertain' ? 'bg-status-uncertain/10 text-status-uncertain' :
+                                        'bg-status-incorrect/10 text-status-incorrect'
+                                    )}>
+                                        {!overviewExplanation ? 'No Analysis' : overviewMatchStatus}
+                                    </span>
+                                </div>
                             </div>
                             
                             <div className="bg-muted/10 p-4 rounded-lg border border-border group relative">

@@ -49,11 +49,11 @@ echo "▶ Cloning task definition"
         --output text)
     
     if [ "$CURRENT_TASK_DEF_ARN" = "None" ] || [ -z "$CURRENT_TASK_DEF_ARN" ]; then
-        log_error "Failed to get current task definition ARN"
+        echo "❌ Failed to get current task definition ARN" >&2
         exit 1
     fi
     
-    log_info "Current task definition: $CURRENT_TASK_DEF_ARN"
+    echo "ℹ️  Current task definition: $CURRENT_TASK_DEF_ARN"
     
     # Clone current task definition
     aws ecs describe-task-definition $QUIET \
@@ -81,7 +81,7 @@ echo "▶ Registering new task definition"
     # Register new task definition
     NEW_TASK_DEF_ARN=$(aws ecs register-task-definition $QUIET \
         --cli-input-json file://taskdef-updated.json \
-        --region "$REGION" \
+        --region "$AWS_REGION" \
         --query 'taskDefinition.taskDefinitionArn' \
         --output text)
     
@@ -91,7 +91,7 @@ echo "✔ New task‑definition ${NEW_TASK_DEF_ARN}"
 echo "▶ Updating service to new revision"
     
     # Update service with new task definition
-    log_info "Updating ECS service with new task definition..."
+    echo "ℹ️  Updating ECS service with new task definition..."
     aws ecs update-service $QUIET \
   --cluster "${ECS_CLUSTER}" \
   --service "${ECS_SERVICE}" \

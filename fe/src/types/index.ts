@@ -37,6 +37,8 @@ export interface ExtendedVerificationResult extends VerificationResult {
   overviewExplanation?: string;
   labelConfidence?: number;
   overviewConfidence?: number;
+  labelMatchStatus?: VerificationMatchStatus;
+  overviewMatchStatus?: VerificationMatchStatus;
   transactionId?: string;
   timestamp?: string;
 }
