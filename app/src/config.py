@@ -17,8 +17,8 @@ class Config:
     AWS_RESULT_TABLE = os.environ.get("AWS_RESULT_TABLE")
 
     # Lambda
-    MAX_REFERENCE_LABEL_IMAGES = int(os.environ.get("MAX_REFERENCE_LABEL_IMAGES", 2))
-    MAX_REFERENCE_OVERVIEW_IMAGES = int(os.environ.get("MAX_REFERENCE_OVERVIEW_IMAGES", 3))
+    MAX_REFERENCE_LABEL_IMAGES = int(os.environ.get("MAX_REFERENCE_LABEL_IMAGES"))
+    MAX_REFERENCE_OVERVIEW_IMAGES = int(os.environ.get("MAX_REFERENCE_OVERVIEW_IMAGES"))
 
     PRODUCT_FEATURES_MAP = {
         "REF": """

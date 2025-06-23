@@ -8,8 +8,8 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Default values
-ECR_REPO="879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-validate-container-ncwy"
-FUNCTION_NAME="aqua-genai-validate-function-ncwy"
+ECR_REPO="879654127886.dkr.ecr.ap-southeast-1.amazonaws.com/aqua-genai-validate-container-f0wt"
+FUNCTION_NAME="aqua-genai-validate-function-f0wt"
 AWS_REGION="ap-southeast-1"
 
 # Parse command line arguments
