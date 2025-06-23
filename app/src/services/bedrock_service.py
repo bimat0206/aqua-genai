@@ -120,8 +120,36 @@ class BedrockService:
 
         if 'content' in response_body and isinstance(response_body['content'], list) and len(response_body['content']) > 0 and 'text' in response_body['content'][0]:
             try:
-                parsed_text_content = json.loads(response_body['content'][0]['text'])
-                response_body['content'][0]['text'] = parsed_text_content
-            except json.JSONDecodeError:
-                logger.warning(f"Bedrock response 'content' field is not a valid JSON string. Storing as raw text. Content: {response_body['content'][0]['text']}", exc_info=True)
+                raw_text = response_body['content'][0]['text']
+                
+                # Extract JSON from markdown code blocks if present
+                if '```json' in raw_text and '```' in raw_text:
+                    # Find the JSON content between ```json and ```
+                    start_marker = '```json'
+                    end_marker = '```'
+                    start_index = raw_text.find(start_marker)
+                    if start_index != -1:
+                        start_index += len(start_marker)
+                        end_index = raw_text.find(end_marker, start_index)
+                        if end_index != -1:
+                            json_content = raw_text[start_index:end_index].strip()
+                            parsed_text_content = json.loads(json_content)
+                            response_body['content'][0]['text'] = parsed_text_content
+                            logger.info("Successfully extracted and parsed JSON from markdown code block")
+                        else:
+                            logger.warning("Found ```json marker but no closing ``` marker")
+                            # Try to parse the raw text as JSON anyway
+                            parsed_text_content = json.loads(raw_text)
+                            response_body['content'][0]['text'] = parsed_text_content
+                    else:
+                        # Fallback to direct JSON parsing
+                        parsed_text_content = json.loads(raw_text)
+                        response_body['content'][0]['text'] = parsed_text_content
+                else:
+                    # Direct JSON parsing for non-markdown responses
+                    parsed_text_content = json.loads(raw_text)
+                    response_body['content'][0]['text'] = parsed_text_content
+                    
+            except json.JSONDecodeError as e:
+                logger.warning(f"Bedrock response 'content' field is not a valid JSON string. Storing as raw text. Content: {response_body['content'][0]['text'][:200]}... Error: {str(e)}", exc_info=True)
         return response_body
