@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
 	//"net/url"
 	"os"
 	"strconv"
@@ -16,16 +17,15 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/smithy-go/middleware"
 	//"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
 // Configuration structure
 type Config struct {
-	DatasetBucket      string
-	Region             string
-	PresignedURLExpiry time.Duration
-	LogLevel           string
+	DatasetBucket       string
+	Region              string
+	PresignedURLExpiry  time.Duration
+	LogLevel            string
 }
 
 // Response structures
@@ -104,17 +104,6 @@ var (
 	appConfig     *Config
 )
 
-// removeAmzSDKRequest removes the default amz-sdk-request header middleware
-// added by the AWS SDK which can cause signature mismatches when validating
-// presigned URLs in certain environments.
-func removeAmzSDKRequest(stack *middleware.Stack) error {
-	_, err := stack.Finalize.Remove("RetryMetricsHeader")
-	if err != nil && strings.Contains(err.Error(), "not found") {
-		return nil
-	}
-	return err
-}
-
 // Category definitions matching the existing system
 var categoryDefinitions = map[string]Category{
 	"REF": {
@@ -150,7 +139,7 @@ var categoryDefinitions = map[string]Category{
 // Initialize AWS services and configuration
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-
+	
 	// Load configuration from environment variables
 	appConfig = &Config{
 		DatasetBucket:      os.Getenv("AWS_DATASET_BUCKET"),
@@ -169,7 +158,7 @@ func init() {
 		}
 	}
 
-	log.Printf("Initializing Catalog API with config: bucket=%s, region=%s, expiry=%v",
+	log.Printf("Initializing Catalog API with config: bucket=%s, region=%s, expiry=%v", 
 		appConfig.DatasetBucket, appConfig.Region, appConfig.PresignedURLExpiry)
 
 	// Initialize AWS configuration
@@ -181,14 +170,8 @@ func init() {
 
 	// Initialize S3 clients
 	s3Client = s3.NewFromConfig(cfg)
-	presignClient = s3.NewPresignClient(s3Client,
-		func(po *s3.PresignOptions) {
-			po.ClientOptions = append(po.ClientOptions,
-				func(o *s3.Options) {
-					o.APIOptions = append(o.APIOptions, removeAmzSDKRequest)
-				})
-		})
-
+	presignClient = s3.NewPresignClient(s3Client)
+	
 	log.Println("AWS S3 clients initialized successfully")
 }
 
@@ -332,20 +315,30 @@ func handleProductsDiscovery(ctx context.Context, requestID string, queryParams 
 func handleImagesDiscovery(ctx context.Context, requestID string, queryParams map[string]string) (*CatalogResponse, error) {
 	category := queryParams["category"]
 	productID := queryParams["productId"]
+	folder := queryParams["folder"] // Optional parameter to specify which folder to fetch
 
 	if category == "" || productID == "" {
 		return nil, fmt.Errorf("missing required 'category' and 'productId' parameters for images discovery")
 	}
 
-	log.Printf("RequestID: %s - Starting images discovery for product: %s/%s", requestID, category, productID)
+	log.Printf("RequestID: %s - Starting images discovery for product: %s/%s, folder: %s", requestID, category, productID, folder)
 
 	// Validate category
 	if _, exists := categoryDefinitions[category]; !exists {
 		return nil, fmt.Errorf("invalid category: %s", category)
 	}
 
-	// Discover images for the specific product
-	imagesData, err := discoverProductImages(ctx, requestID, category, productID)
+	var imagesData *ImagesData
+	var err error
+
+	// If folder is specified, fetch images from specific folder only
+	if folder != "" {
+		imagesData, err = discoverProductImagesFromFolder(ctx, requestID, category, productID, folder)
+	} else {
+		// Default behavior: fetch all images
+		imagesData, err = discoverProductImages(ctx, requestID, category, productID)
+	}
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to discover images for product %s/%s: %w", category, productID, err)
 	}
@@ -363,7 +356,7 @@ func handleImagesDiscovery(ctx context.Context, requestID string, queryParams ma
 		},
 	}
 
-	log.Printf("RequestID: %s - Images discovery completed for %s/%s: %d total images (%d label, %d overview)",
+	log.Printf("RequestID: %s - Images discovery completed for %s/%s: %d total images (%d label, %d overview)", 
 		requestID, category, productID, totalImages, len(imagesData.LabelImages), len(imagesData.OverviewImages))
 	return response, nil
 }
@@ -444,7 +437,7 @@ func discoverProductsInCategory(ctx context.Context, requestID, categoryPrefix, 
 // Check for label folders (TEM NL)
 func checkLabelFolders(ctx context.Context, requestID, productPrefix string) (bool, []string) {
 	labelPrefix := productPrefix + "TEM NL/"
-
+	
 	input := &s3.ListObjectsV2Input{
 		Bucket:  aws.String(appConfig.DatasetBucket),
 		Prefix:  aws.String(labelPrefix),
@@ -474,7 +467,7 @@ func checkOverviewFolders(ctx context.Context, requestID, productPrefix string) 
 
 	for _, folderName := range overviewFolderNames {
 		overviewPrefix := productPrefix + folderName + "/"
-
+		
 		input := &s3.ListObjectsV2Input{
 			Bucket:  aws.String(appConfig.DatasetBucket),
 			Prefix:  aws.String(overviewPrefix),
@@ -557,6 +550,49 @@ func discoverProductImages(ctx context.Context, requestID, category, productID s
 	return imagesData, nil
 }
 
+// Discover images for a specific product from a specific folder
+func discoverProductImagesFromFolder(ctx context.Context, requestID, category, productID, folder string) (*ImagesData, error) {
+	basePrefix := fmt.Sprintf("dataset/%s/%s/", category, productID)
+	log.Printf("RequestID: %s - Discovering images from specific folder: %s%s", requestID, basePrefix, folder)
+
+	imagesData := &ImagesData{
+		LabelImages:    []ImageData{},
+		OverviewImages: []ImageData{},
+	}
+
+	// Map folder names to their corresponding array in ImagesData
+	switch folder {
+	case "TEM NL":
+		// Discover label images
+		labelImages, err := discoverImagesInFolder(ctx, requestID, basePrefix+"TEM NL/")
+		if err != nil {
+			log.Printf("RequestID: %s - Warning: Failed to discover label images: %v", requestID, err)
+		} else {
+			imagesData.LabelImages = labelImages
+		}
+	case "CHÍNH DIỆN":
+		// Discover overview images from CHÍNH DIỆN folder
+		overviewImages, err := discoverImagesInFolder(ctx, requestID, basePrefix+"CHÍNH DIỆN/")
+		if err != nil {
+			log.Printf("RequestID: %s - Warning: Failed to discover overview images in CHÍNH DIỆN: %v", requestID, err)
+		} else {
+			imagesData.OverviewImages = overviewImages
+		}
+	case "HÌNH WEB":
+		// Discover overview images from HÌNH WEB folder
+		overviewImages, err := discoverImagesInFolder(ctx, requestID, basePrefix+"HÌNH WEB/")
+		if err != nil {
+			log.Printf("RequestID: %s - Warning: Failed to discover overview images in HÌNH WEB: %v", requestID, err)
+		} else {
+			imagesData.OverviewImages = overviewImages
+		}
+	default:
+		return nil, fmt.Errorf("unsupported folder: %s. Supported folders: TEM NL, CHÍNH DIỆN, HÌNH WEB", folder)
+	}
+
+	return imagesData, nil
+}
+
 // Discover images in a specific folder and generate presigned URLs
 func discoverImagesInFolder(ctx context.Context, requestID, folderPrefix string) ([]ImageData, error) {
 	log.Printf("RequestID: %s - Discovering images in folder: %s", requestID, folderPrefix)
@@ -631,7 +667,7 @@ func generatePresignedURL(ctx context.Context, requestID, key string) (string, e
 func isImageFile(key string) bool {
 	lowerKey := strings.ToLower(key)
 	imageExtensions := []string{".jpg", ".jpeg", ".png", ".webp"}
-
+	
 	for _, ext := range imageExtensions {
 		if strings.HasSuffix(lowerKey, ext) {
 			return true
@@ -643,7 +679,7 @@ func isImageFile(key string) bool {
 // Get content type based on file extension
 func getContentType(key string) string {
 	lowerKey := strings.ToLower(key)
-
+	
 	if strings.HasSuffix(lowerKey, ".jpg") || strings.HasSuffix(lowerKey, ".jpeg") {
 		return "image/jpeg"
 	} else if strings.HasSuffix(lowerKey, ".png") {
@@ -651,7 +687,7 @@ func getContentType(key string) string {
 	} else if strings.HasSuffix(lowerKey, ".webp") {
 		return "image/webp"
 	}
-
+	
 	return "image/jpeg" // Default fallback
 }
 
