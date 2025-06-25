@@ -84,11 +84,11 @@ class Config:
 
             * **Step 1.1 - Initial Scan & OCR (Implicit):** Carefully examine the "Uploaded Label Image" for legibility, orientation, and key identifying text.
             * **Step 1.2 - Feature Extraction:** Identify and list critical information from the "Uploaded Label Image":
-                * The exact product model code (e.g., 'AQR-B360MA').
+                * The exact product model code INCLUDING any suffixes or parenthetical extensions (e.g., 'AQR-B360MA', 'AQR-M466XA(GB)', 'AQR-M466XA(SG)'). IMPORTANT: Suffixes like (GB), (SG), etc. are integral parts of the product code and MUST be matched exactly.
                 * Any stated capacity or energy consumption figures.
                 * Distinctive logos, certifications, or layout elements.
             * **Step 1.3 - Reference Comparison:** Compare the extracted features from the "Uploaded Label Image" against **ALL** "Reference Label Image(s)" for Product ID "{product_id}".
-            * **Step 1.4 - Discrepancy Detection (Label):** Note *any and all* visual differences or inconsistencies in text, layout, font styles, colors, or overall design, no matter how minor, between the uploaded label and *any* of the reference labels.
+            * **Step 1.4 - Discrepancy Detection (Label):** Note *any and all* visual differences or inconsistencies in text, layout, font styles, colors, or overall design, no matter how minor, between the uploaded label and *any* of the reference labels. CRITICAL: Product codes must match EXACTLY character-for-character, including any suffixes in parentheses like (GB), (SG), etc. A product code "AQR-M466XA" does NOT match "AQR-M466XA(GB)" - they are different products.
             * **Step 1.5 - Final Judgment (Label):**
                 * `matchLabelToReference`: Set to 'yes' only if the uploaded label is an **EXACT, unambiguous visual and textual match** to *at least one* of the reference labels for Product ID "{product_id}". Minor variations due to perspective, lighting, or compression are acceptable *only if* the core information and design are identical.
                 * If *any* discrepancy in product code, capacity, or layout is found, or if the image is too blurry/obscured to verify with high confidence, set to 'no'.
@@ -127,7 +127,7 @@ class Config:
             JSON:
                 "matchLabelToReference": "yes/no",
                 "matchLabelToReference_confidence": 0.0,
-                "label_explanation": "Detailed explanation of label comparison, highlighting matching or mismatching elements (e.g., 'Exact product code match: AQR-B360MA', 'Mismatch: Capacity on label is 250L, reference is 292L'). If 'no' due to low confidence, state why (e.g., 'Label text is unreadable due to blur').",
+                "label_explanation": "Detailed explanation of label comparison, highlighting matching or mismatching elements (e.g., 'Exact product code match: AQR-B360MA(GB) including suffix', 'Mismatch: Product code on label is AQR-M466XA but reference is AQR-M466XA(GB) - missing (GB) suffix', 'Mismatch: Capacity on label is 250L, reference is 292L'). If 'no' due to low confidence, state why (e.g., 'Label text is unreadable due to blur').",
                 "matchOverviewToReference": "yes/no",
                 "matchOverviewToReference_confidence": 0.0,
                 "overview_explanation": "Detailed explanation of product overview comparison, specifying exact matching features or explicit differences. If 'no' due to visual differences, explicitly list *all* specific distinguishing features that led to the mismatch (e.g., 'Mismatch: The uploaded product has external bar handles, while AQR-B360MA(SLB) has recessed handles.'). If 'no' due to low confidence, state why (e.g., 'Product is partially obscured by packaging, preventing full feature verification')."

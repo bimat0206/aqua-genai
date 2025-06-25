@@ -2,6 +2,24 @@
 
 All notable changes to the Lambda verification function will be documented in this file.
 
+## [1.2.1] - 2025-06-25
+
+### Fixed
+- **Product Code Suffix Matching** - Fixed issue where product codes with country suffixes were incorrectly matched
+  - Bedrock AI model now enforces strict character-for-character matching of product codes including suffixes
+  - Product codes like "AQR-M466XA" and "AQR-M466XA(GB)" are now correctly identified as different products
+  - Enhanced prompt instructions to explicitly handle parenthetical suffixes like (GB), (SG), etc.
+  - Improved error detection for missing or incorrect product code suffixes
+
+### Technical Details
+- Modified `config.py` prompt instructions to emphasize exact product code matching
+- Added explicit examples showing suffix matching requirements
+- Updated label comparison logic to treat suffixes as integral parts of product codes
+- Enhanced explanation field examples to show proper suffix mismatch reporting
+
+### Files Modified
+- `src/config.py` - Updated Bedrock prompt configuration for strict product code matching
+
 ## [1.2] - 2025-06-21
 
 ### Fixed
