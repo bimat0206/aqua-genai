@@ -5,6 +5,24 @@ All notable changes to the Aqua GenAI Frontend will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-06-25
+
+### Added
+- **Reference Image Comparison**: Enhanced Overview Image Analysis with reference image preview for easy comparison
+  - Added reference image display alongside overview image in Step 5 verification results
+  - Integrated with transaction API endpoint (`/dev/transaction/{transactionId}`) to fetch reference images
+  - Enhanced expanded modal to show reference image in a 3-column layout (Overview Image | Reference Image | Analysis)
+  - Added proper image labeling and responsive grid layout for better user experience
+  - Automatic fetching of reference image after verification completion using transaction details API
+  - Reference image state management with proper cleanup on new verification start
+
+### Changed
+- **Overview Image Analysis Card Layout**: Updated to display both uploaded overview and reference images side-by-side
+  - Grid layout adapts responsively: single column on mobile, two columns on desktop
+  - Added descriptive headers ("Overview Image" and "Reference Image") for better clarity
+  - Enhanced image containers with consistent border styling and proper aspect ratios
+  - Maintained existing functionality while improving visual comparison capabilities
+
 ## [1.2.2] - 2025-06-25
 
 ### Fixed

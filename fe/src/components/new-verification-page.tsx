@@ -12,7 +12,7 @@ import WashingMachineIcon from './icons/WashingMachineIcon';
 import TelevisionIcon from './icons/TelevisionIcon';
 import type { ProductCategory, Product, ImageFile, VerificationMatchStatus, ExtendedVerificationResult } from '@/types';
 import { getProductsForCategory, mockImageFiles } from '@/lib/mock-data';
-import { getProducts, getImages, getOverviewImages, getLabelImages, getApiEndpoint, getApiKey, getCategoryCode } from '@/lib/api-client';
+import { getProducts, getImages, getOverviewImages, getLabelImages, getApiEndpoint, getApiKey, getCategoryCode, getTransactionDetail } from '@/lib/api-client';
 import { analyzeVerificationResult, AnalyzeVerificationResultOutput } from '@/ai/flows/analyze-verification-result';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -48,6 +48,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
   const [copiedOverview, setCopiedOverview] = useState(false);
   const [expandedSection, setExpandedSection] = useState<'label' | 'overview' | null>(null);
   const [copiedTransactionId, setCopiedTransactionId] = useState(false);
+  const [referenceImage, setReferenceImage] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -198,17 +199,36 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
           </div>
           
           <div className="p-6 h-[calc(1280px-80px)] flex flex-col">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
+            <div className={cn(
+              "grid gap-6 h-full",
+              type === 'overview' && referenceImage ? "grid-cols-1 lg:grid-cols-3" : "grid-cols-1 lg:grid-cols-2"
+            )}>
               {/* Image Section */}
               {image && (
                 <div className="flex flex-col h-full">
-                  <h4 className="text-lg font-semibold mb-4">Image</h4>
+                  <h4 className="text-lg font-semibold mb-4">{type === 'label' ? 'Label Image' : 'Overview Image'}</h4>
                   <div className="relative flex-1 bg-muted/20 rounded-lg overflow-hidden min-h-0">
                     <Image 
                       src={image.dataUri} 
                       alt={type === 'label' ? 'Label Image' : 'Overview Image'}
                       fill 
                       className="object-contain"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* Reference Image Section (only for overview) */}
+              {type === 'overview' && referenceImage && (
+                <div className="flex flex-col h-full">
+                  <h4 className="text-lg font-semibold mb-4">Reference Image</h4>
+                  <div className="relative flex-1 bg-muted/20 rounded-lg overflow-hidden min-h-0">
+                    <Image 
+                      src={referenceImage} 
+                      alt="Reference Image"
+                      fill 
+                      className="object-contain"
+                      unoptimized
                     />
                   </div>
                 </div>
@@ -340,6 +360,24 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
 
     loadStepImages();
   }, [currentStep, selectedProduct, selectedCategory, overviewImages.length, labelImages.length, toast]);
+
+  // Fetch reference image when verification result has transactionId
+  useEffect(() => {
+    const fetchReferenceImage = async () => {
+      if (verificationResult?.transactionId) {
+        try {
+          const transactionDetail = await getTransactionDetail(verificationResult.transactionId);
+          if (transactionDetail?.imageAccess?.uploadedReferenceImage?.presignedUrl) {
+            setReferenceImage(transactionDetail.imageAccess.uploadedReferenceImage.presignedUrl);
+          }
+        } catch (error) {
+          console.error('Failed to fetch reference image:', error);
+        }
+      }
+    };
+
+    fetchReferenceImage();
+  }, [verificationResult?.transactionId]);
 
   const handleCategorySelect = (category: ProductCategory) => {
     setSelectedCategory(category);
@@ -484,6 +522,7 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
     setVerificationResult(null);
     setIsLoading(false);
     setSubmissionError(null);
+    setReferenceImage(null);
   };
 
   const getCurrentImageSet = (): ImageFile[] => {
@@ -1011,15 +1050,39 @@ const NewVerificationPage: React.FC<{ onNavigate: (page: 'new' | 'results') => v
                                 </div>
                                 
                                 {/* Image Preview at the top */}
-                                {overviewImage && (
+                                {(overviewImage || referenceImage) && (
                                     <div className="mb-4">
-                                        <div className="relative w-full h-48 mb-3">
-                                            <Image 
-                                                src={overviewImage.dataUri} 
-                                                alt="Uploaded Overview" 
-                                                fill 
-                                                className="object-contain rounded-md"
-                                            />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Overview Image */}
+                                            {overviewImage && (
+                                                <div>
+                                                    <h5 className="text-sm font-medium text-muted-foreground mb-2">Overview Image</h5>
+                                                    <div className="relative w-full h-48 mb-3">
+                                                        <Image 
+                                                            src={overviewImage.dataUri} 
+                                                            alt="Uploaded Overview" 
+                                                            fill 
+                                                            className="object-contain rounded-md border border-border"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            {/* Reference Image */}
+                                            {referenceImage && (
+                                                <div>
+                                                    <h5 className="text-sm font-medium text-muted-foreground mb-2">Reference Image</h5>
+                                                    <div className="relative w-full h-48 mb-3">
+                                                        <Image 
+                                                            src={referenceImage} 
+                                                            alt="Reference Image" 
+                                                            fill 
+                                                            className="object-contain rounded-md border border-border"
+                                                            unoptimized
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
