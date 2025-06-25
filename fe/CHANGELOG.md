@@ -5,6 +5,27 @@ All notable changes to the Aqua GenAI Frontend will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-06-25
+
+### Fixed
+- **Transaction Details Modal Scrolling**: Fixed scrolling issue on Full HD screens
+  - Added overflow handling to the main content area with `overflow-y-auto`
+  - Added `max-h-[95vh]` constraint to ensure modal respects viewport limits
+  - Content now properly scrolls when exceeding viewport height while keeping header visible
+  - Resolves issue where bottom content was cut off and inaccessible on Full HD displays
+
+## [1.2.1] - 2025-06-24
+
+### Changed
+- **System Health Check Integration**: Updated health check page to use real API endpoint
+  - Replaced mock health status simulation with actual `/health` API calls
+  - Integrated with dynamic API endpoint configuration from environment variables
+  - Added proper API key authentication for health check requests
+  - Enhanced status mapping to support multiple health states: "healthy" → "Operational", "unhealthy" → "Offline", "degraded" → "Degraded"
+  - Added fallback logic for basic health responses that don't include service-specific statuses
+  - Updated service status mapping to handle both detailed and basic API response formats
+  - Services now reflect actual system health instead of random simulation
+
 ## [1.2.0] - 2025-06-23
 
 ### Fixed

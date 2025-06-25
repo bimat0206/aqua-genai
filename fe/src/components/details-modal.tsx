@@ -234,7 +234,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
 
   return (
     <Dialog open={!!item} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-none w-[95vw] h-[95vh] bg-card text-card-foreground p-0 flex flex-col" aria-describedby={`details-for-${item.transactionId}`}>
+      <DialogContent className="max-w-none w-[95vw] h-[95vh] max-h-[95vh] bg-card text-card-foreground p-0 flex flex-col" aria-describedby={`details-for-${item.transactionId}`}>
         <DialogHeader className="p-6 pb-4 border-b border-border">
           <DialogTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-gradient-from via-accent-gradient-via to-accent-gradient-to">
             Transaction Details: <span className="font-mono">{item.transactionId}</span>
@@ -275,7 +275,8 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
           </div>
         </DialogHeader>
         
-        <div className="flex-grow p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex-grow p-6 overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Column 1: Reference Image */}
           <div className="md:col-span-1">
              <Card className="bg-background shadow-md h-full flex flex-col">
@@ -396,6 +397,7 @@ const DetailsModal: React.FC<DetailsModalProps> = ({ item, onClose }) => {
                 </div>
               </CardContent>
             </Card>
+          </div>
           </div>
         </div>
       </DialogContent>

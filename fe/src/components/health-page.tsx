@@ -9,7 +9,7 @@ import type { ServiceHealthInfo, ServiceStatusType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
 import { format } from 'date-fns';
-import { getApiEndpoint } from '@/lib/api-client';
+import { getApiEndpoint, getApiKey } from '@/lib/api-client';
 
 const initialServices: ServiceHealthInfo[] = [
   { id: 'ai-analysis', name: 'AI Analysis Service', status: 'Checking...', lastChecked: 'N/A', details: 'Responsible for product image analysis.' },
@@ -60,23 +60,79 @@ const HealthPage: React.FC = () => {
     }
   }, []);
 
-  const checkServiceHealth = (service: ServiceHealthInfo): Promise<ServiceHealthInfo> => {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        const statuses: ServiceStatusType[] = ['Operational', 'Degraded', 'Offline'];
-        // Make "Operational" more likely
-        const randomStatus = Math.random() < 0.7 ? 'Operational' : getRandomElement(statuses.filter(s => s !== 'Operational'));
-        
-        resolve({
-          ...service,
-          status: randomStatus,
-          lastChecked: format(new Date(), 'PPpp'),
-        });
-      }, Math.random() * 1000 + 500); // Simulate network delay
-    });
-  };
+  const checkServiceHealth = async (): Promise<{services: ServiceHealthInfo[], overallStatus: string}> => {
+    try {
+      const apiEndpoint = await getApiEndpoint();
+      const apiKey = await getApiKey();
+      
+      const response = await fetch(`${apiEndpoint}/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+        },
+      });
 
-  const getRandomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
+      if (!response.ok) {
+        throw new Error(`Health check failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Map API response to our service structure
+      // If the API returns detailed service status, use it. Otherwise, infer from overall status
+      const isHealthy = data.status === 'healthy';
+      
+      const updatedServices: ServiceHealthInfo[] = [
+        {
+          id: 'ai-analysis',
+          name: 'AI Analysis Service',
+          status: data.aiAnalysis?.status === 'healthy' ? 'Operational' : 
+                  data.aiAnalysis?.status === 'unhealthy' ? 'Offline' :
+                  data.aiAnalysis?.status === 'degraded' ? 'Degraded' :
+                  isHealthy ? 'Operational' : 'Offline',
+          lastChecked: format(new Date(), 'PPpp'),
+          details: 'Responsible for product image analysis.'
+        },
+        {
+          id: 'database',
+          name: 'Database Connection',
+          status: data.database?.status === 'healthy' ? 'Operational' : 
+                  data.database?.status === 'unhealthy' ? 'Offline' :
+                  data.database?.status === 'degraded' ? 'Degraded' :
+                  isHealthy ? 'Operational' : 'Offline',
+          lastChecked: format(new Date(), 'PPpp'),
+          details: 'Stores and retrieves verification data.'
+        },
+        {
+          id: 'image-storage',
+          name: 'Image Storage Service',
+          status: data.s3?.status === 'healthy' ? 'Operational' : 
+                  data.s3?.status === 'unhealthy' ? 'Offline' :
+                  data.s3?.status === 'degraded' ? 'Degraded' :
+                  isHealthy ? 'Operational' : 'Offline',
+          lastChecked: format(new Date(), 'PPpp'),
+          details: 'Manages uploaded product images.'
+        }
+      ];
+
+      return {
+        services: updatedServices,
+        overallStatus: data.status || 'unknown'
+      };
+    } catch (error) {
+      console.error('Health check error:', error);
+      // Return all services as offline if API call fails
+      return {
+        services: initialServices.map(service => ({
+          ...service,
+          status: 'Offline' as ServiceStatusType,
+          lastChecked: format(new Date(), 'PPpp'),
+        })),
+        overallStatus: 'error'
+      };
+    }
+  };
 
   const refreshAllServices = async () => {
     setIsChecking(true);
@@ -88,11 +144,9 @@ const HealthPage: React.FC = () => {
         })
     );
 
-
-    const updatedServicesPromises = initialServices.map(service => checkServiceHealth(service));
-    const updatedServices = await Promise.all(updatedServicesPromises);
+    const healthCheckResult = await checkServiceHealth();
     
-    setServices(updatedServices);
+    setServices(healthCheckResult.services);
     setLastCheckedAll(format(new Date(), 'PPpp'));
     setIsChecking(false);
   };
