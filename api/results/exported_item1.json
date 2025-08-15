@@ -1,0 +1,96 @@
+{
+    "Item": {
+        "bedrockResponse": {
+            "M": {
+                "role": {
+                    "S": "assistant"
+                },
+                "stop_sequence": {
+                    "NULL": true
+                },
+                "usage": {
+                    "M": {
+                        "output_tokens": {
+                            "N": "378"
+                        },
+                        "cache_creation_input_tokens": {
+                            "N": "0"
+                        },
+                        "input_tokens": {
+                            "N": "10934"
+                        },
+                        "cache_read_input_tokens": {
+                            "N": "0"
+                        }
+                    }
+                },
+                "stop_reason": {
+                    "S": "end_turn"
+                },
+                "model": {
+                    "S": "claude-sonnet-4-20250514"
+                },
+                "id": {
+                    "S": "msg_bdrk_01JBwv9yBSJikJgoUE5Ax9nK"
+                },
+                "type": {
+                    "S": "message"
+                },
+                "content": {
+                    "L": [
+                        {
+                            "M": {
+                                "type": {
+                                    "S": "text"
+                                },
+                                "text": {
+                                    "M": {
+                                        "label_explanation": {
+                                            "S": "Exact product code match: AQR-M536XA found on both uploaded label and reference labels. All key specifications match perfectly - capacity: 469L, energy consumption: 431.3 kWh/năm, power rating: 135W, energy efficiency rating: 1.81, manufacturer: HAIER ELECTRIC (THAILAND) PCL., origin: THÁI LAN. The energy star rating shows 5 stars in orange section, warranty information with Twin Inverter compressor technology, QR code placement, and VNEEP certification logo all match the reference labels exactly. Layout, colors (green background, orange star section), and typography are identical."
+                                        },
+                                        "matchLabelToReference_confidence": {
+                                            "N": "0.95"
+                                        },
+                                        "matchOverviewToReference": {
+                                            "S": "yes"
+                                        },
+                                        "matchOverviewToReference_confidence": {
+                                            "N": "0.92"
+                                        },
+                                        "matchLabelToReference": {
+                                            "S": "yes"
+                                        },
+                                        "overview_explanation": {
+                                            "S": "The uploaded overview image shows a four-door French door refrigerator configuration that matches the reference overview images perfectly. Key matching features include: Four-door configuration with two upper French doors and two lower freezer drawers, glossy black finish on all door surfaces, integrated pocket-style handles (recessed handles without external bars), AQUA logo positioned on the upper right door, 'TWIN INVERTER' branding visible on the right door, sleek modern design with clean lines, and overall proportions and dimensions consistent with the reference images. The product in the retail environment matches all discernible physical design elements of the AQR-M536XA(GB) model shown in the reference images."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "uploadedReferenceImageKey": {
+            "S": "dataset/REF/AQR-M536XA(GB)/HÌNH WEB/M536-GB-Left_.webp,dataset/REF/AQR-M536XA(GB)/HÌNH WEB/M536-GB-Right_.webp"
+        },
+        "uploadedLabelImageKey": {
+            "S": "dataset/REF/AQR-M536XA(GB)/TEM NL/33c9de87-13e0-48c1-aad1-c1e68397d0b1-image_1747129310583.jpg"
+        },
+        "timestamp": {
+            "S": "2025-06-22T16:15:43.178601"
+        },
+        "uploadedOverviewImageKey": {
+            "S": "dataset/REF/AQR-M536XA(GB)/CHÍNH DIỆN/ca6acfac-37cb-40f2-8fda-83801a54a2fe-image_1745631407696.jpg"
+        },
+        "productCategory": {
+            "S": "REF"
+        },
+        "id": {
+            "S": "e17fd606-db7b-41ff-bd10-d0a91a5e7cd2"
+        },
+        "productId": {
+            "S": "AQR-M536XA(GB)"
+        }
+    }
+}

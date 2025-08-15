@@ -1,0 +1,96 @@
+{
+    "Item": {
+        "bedrockResponse": {
+            "M": {
+                "role": {
+                    "S": "assistant"
+                },
+                "stop_sequence": {
+                    "NULL": true
+                },
+                "usage": {
+                    "M": {
+                        "output_tokens": {
+                            "N": "354"
+                        },
+                        "cache_creation_input_tokens": {
+                            "N": "0"
+                        },
+                        "input_tokens": {
+                            "N": "11358"
+                        },
+                        "cache_read_input_tokens": {
+                            "N": "0"
+                        }
+                    }
+                },
+                "stop_reason": {
+                    "S": "end_turn"
+                },
+                "model": {
+                    "S": "claude-sonnet-4-20250514"
+                },
+                "id": {
+                    "S": "msg_bdrk_01QBL5eeKU2DSytkeESQFRH5"
+                },
+                "type": {
+                    "S": "message"
+                },
+                "content": {
+                    "L": [
+                        {
+                            "M": {
+                                "type": {
+                                    "S": "text"
+                                },
+                                "text": {
+                                    "M": {
+                                        "label_explanation": {
+                                            "S": "Mismatch detected in product model code. The uploaded label shows 'AW10-BP4959U1K' while the reference labels show 'AW10-BP4959U1K(B)' - the uploaded label is missing the '(B)' designation at the end. All other specifications match exactly: 1750W power consumption, 10.0kg capacity, 10.1 W.h/kg energy efficiency, TCVN 8526:2013 standard, same manufacturer (AQUA VIETNAM), same energy rating (4 stars), and identical layout and design elements."
+                                        },
+                                        "matchLabelToReference_confidence": {
+                                            "N": "0.95"
+                                        },
+                                        "matchOverviewToReference": {
+                                            "S": "yes"
+                                        },
+                                        "matchOverviewToReference_confidence": {
+                                            "N": "0.92"
+                                        },
+                                        "matchLabelToReference": {
+                                            "S": "no"
+                                        },
+                                        "overview_explanation": {
+                                            "S": "The uploaded overview image shows a front-loading washing machine that matches the reference overview images for Product ID AW10-BP4959U1K(B). Key matching features include: identical black/dark grey color scheme, same front-loading design with large circular door, matching control panel layout with digital display showing '00:39', identical circular control dial on the right side, same AQUA branding position on the top left, matching door handle design, identical overall proportions and design aesthetic, same sleek modern appearance, and consistent side panel styling. The washing machine in the uploaded image appears to be the exact same model as shown in the reference images."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "uploadedReferenceImageKey": {
+            "S": "dataset/WM/AW10-BP4959U1K(B)/HÌNH WEB/AW10-BP4959U1K.1.webp,dataset/WM/AW10-BP4959U1K(B)/HÌNH WEB/AW10-BP4959U1K.1-3_1.webp"
+        },
+        "uploadedLabelImageKey": {
+            "S": "dataset/WM/AW10-BP4959U1K(B)/TEM NL/07387a14-2624-44c7-9c09-e328df63f27d-image_1745305366748.jpg"
+        },
+        "timestamp": {
+            "S": "2025-06-22T16:31:45.683918"
+        },
+        "uploadedOverviewImageKey": {
+            "S": "dataset/WM/AW10-BP4959U1K(B)/CHÍNH DIỆN/ed74c03d-1e80-4806-8220-5d69f7febbd4-image_1747190937129.jpg"
+        },
+        "productCategory": {
+            "S": "WM"
+        },
+        "id": {
+            "S": "ebb33c1a-82d8-4e91-812b-467e119225f3"
+        },
+        "productId": {
+            "S": "AW10-BP4959U1K(B)"
+        }
+    }
+}

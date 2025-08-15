@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(aws dynamodb describe-table:*)",
+      "Bash(aws dynamodb scan:*)",
+      "Bash(go build:*)",
+      "Bash(./test_transaction_api.sh:*)",
+      "Bash(aws dynamodb get-item:*)",
+      "Bash(aws logs tail:*)",
+      "Bash(aws lambda list-functions:*)",
+      "Bash(aws sts get-caller-identity:*)",
+      "Bash(aws lambda get-function:*)",
+      "Bash(aws s3api get-bucket-policy:*)",
+      "Bash(aws s3api head-bucket:*)",
+      "Bash(aws iam list-attached-role-policies:*)",
+      "Bash(aws iam list-role-policies:*)",
+      "Bash(aws iam get-role-policy:*)"
+    ],
+    "deny": []
+  }
+}

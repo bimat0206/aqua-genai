@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash:*)",
+      "Bash(grep:*)",
+      "Bash(awk:*)",
+      "Bash(cat:*)",
+      "Bash(cp:*)",
+      "Bash(./deploy.sh:*)"
+    ],
+    "deny": []
+  }
+}

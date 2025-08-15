@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(aws dynamodb get-item --table-name aqua-genai-app-api-transaction --key '{\"pk\":{\"S\":\"05987223-3dbd-47c3-9c3f-3fea10831bf8\"}}')",
+      "Bash(aws dynamodb:*)",
+      "Bash(python:*)"
+    ],
+    "deny": []
+  }
+}

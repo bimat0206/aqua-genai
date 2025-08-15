@@ -2,6 +2,47 @@
 
 All notable changes to the Lambda verification function will be documented in this file.
 
+## [1.3.0] - 2025-06-25
+
+### Added
+- **Enhanced Verification Protocol** - Complete overhaul of Bedrock prompt system for improved accuracy and consistency
+  - Implemented systematic two-phase verification protocol (Product Code → Physical Features)
+  - Added character-by-character product code validation matrix with explicit rules
+  - Enhanced confidence scoring methodology with granular criteria
+  - Introduced self-validation checks before output generation
+  - Added structured decision logic with clear fail conditions
+
+### Enhanced
+- **Product Code Validation** - Comprehensive character-by-character matching system
+  - Validation rules explicitly define exact match requirements
+  - Clear decision logic: EXACT MATCH vs BASE MATCH vs PARTIAL MATCH vs CASE MISMATCH
+  - Immediate fail conditions for any character discrepancies
+  - Enhanced handling of country/region suffixes like (GB), (SG), (US)
+- **Physical Feature Verification** - Systematic feature extraction and comparison
+  - Feature-by-feature comparison matrix (IDENTICAL vs SIMILAR vs DIFFERENT)
+  - Critical feature identification with automatic fail conditions
+  - Enhanced color and finish matching requirements
+  - Improved handling of multiple products in frame
+- **Confidence Scoring** - Granular confidence calculation methodology
+  - High Confidence (0.90-1.0): Perfect visibility and unambiguous results
+  - Medium Confidence (0.85-0.89): Good visibility with clear decisions
+  - Low Confidence (<0.85): Automatic default to "no" with detailed reasoning
+- **Output Quality** - Enhanced explanation requirements and validation
+  - Detailed character-by-character analysis in explanations
+  - Systematic feature verification reporting
+  - Self-validation checks ensure consistency between decisions and explanations
+
+### Technical Details
+- Completely rewrote `get_context_prompt_text()` with enhanced mission and principles
+- Replaced `get_action_prompt_text()` with systematic verification protocol
+- Added visual separators and structured formatting for improved AI comprehension
+- Enhanced validation matrices and decision trees for consistent results
+- Implemented comprehensive confidence scoring methodology
+- Added self-validation checks to prevent contradictory outputs
+
+### Files Modified
+- `src/config.py` - Complete prompt system overhaul with enhanced verification protocols
+
 ## [1.2.1] - 2025-06-25
 
 ### Fixed
